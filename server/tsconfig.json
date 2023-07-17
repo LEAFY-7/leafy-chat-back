@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "baseUrl": ".",
+    "target": "ES5",
     "module": "commonjs",
     "allowJs": true,
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": ".",
-    "baseUrl": "./src",
-    "paths": {},
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
-    "moduleResolution": "node"
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
