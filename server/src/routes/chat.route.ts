@@ -4,6 +4,6 @@ import tokenMiddleware from "../middlewares/token.middleware";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/:email", tokenMiddleware.auth, chatController.getChats);
+router.get("/:userId", tokenMiddleware.auth, chatController.getChats);
 
 export default router;
