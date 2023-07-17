@@ -2,19 +2,24 @@ import mongoose, { Schema } from "mongoose";
 
 const chatSchema = new Schema(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     members: {
       type: Array,
     },
   },
   {
-    timestamps: true, // 예시: 타임스탬프 옵션 추가
+    timestamps: true,
   }
 );
 
-class ResumeSchema {
+class ChatSchema {
   static getModel() {
     return mongoose.model("Chat", chatSchema);
   }
 }
 
-export default ResumeSchema.getModel();
+export default ChatSchema.getModel();
