@@ -26,7 +26,7 @@ const auth = async (
     return;
   }
 
-  // 모델
+  // 모델c:\Users\태권\leafy-front-2\.github
   next();
 };
 
