@@ -20,11 +20,7 @@ const tokenDecode = (req: Request) => {
   }
 };
 
-export const auth: any = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   const {
     params: { userId },
   } = req;
