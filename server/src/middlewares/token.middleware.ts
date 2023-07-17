@@ -1,5 +1,6 @@
-import jsonwebtoken from "jsonwebtoken";
 import * as express from "express";
+import jsonwebtoken from "jsonwebtoken";
+import responseHandler from "../handlers/response.handler";
 
 const tokenDecode = (req: express.Request) => {
   try {
@@ -17,16 +18,14 @@ const tokenDecode = (req: express.Request) => {
 
 const auth = async (
   req: express.Request,
-  res: express.Request,
+  res: express.Response,
   next: express.NextFunction
 ) => {
   const decodedToken = tokenDecode(req);
-  if (!decodedToken) {
-    // 인증안될때 handler
-    return;
-  }
+  if (!decodedToken) return responseHandler.unauthorize(res);
 
-  // 모델c:\Users\태권\leafy-front-2\.github
+  // 모델
+
   next();
 };
 
