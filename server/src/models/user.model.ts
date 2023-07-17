@@ -1,10 +1,11 @@
 import mongoose, { Schema } from "mongoose";
+import ModelOptionsClass from "./modelOptions";
 
 const userSchema = new Schema(
   {
     _id: {
-      type: Schema.Types.ObjectId,
-      default: () => new mongoose.Types.ObjectId(),
+      type: Number,
+      required: true,
     },
     email: {
       type: String,
@@ -19,9 +20,7 @@ const userSchema = new Schema(
       required: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  ModelOptionsClass.modelOptions
 );
 
 class UserSchema {
@@ -29,5 +28,4 @@ class UserSchema {
     return mongoose.model("User", userSchema);
   }
 }
-
 export default UserSchema.getModel();

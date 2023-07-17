@@ -1,33 +1,24 @@
 import { Request, Response, RequestHandler } from "express";
-import userModel from "../models/user.model";
+import User from "../models/user.model";
 import responseHandler from "../handlers/response.handler";
 
 const signUp: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {
-      body: { email, userId, name, nickName },
+      body: { userId, email, name, nickName },
     } = req;
-
-    const checkUser = await userModel.findById(userId);
-
+    const checkUser = await User.findById(userId);
     if (checkUser) {
-      return responseHandler.badRequest(res, "아이디가 존재하지 않습니다.");
+      return responseHandler.badRequest(res, "이미 채팅 아이디가 있습니다.");
     }
-    const createdUser = new userModel({
+    const newUser = new User({
       _id: userId,
       email,
       name,
       nickName,
     });
-
-    await createdUser.save();
-
-    responseHandler.created(res, {
-      id: createdUser.id,
-      email: createdUser.email,
-      name: createdUser.name,
-      nickName: createdUser.nickName,
-    });
+    const createdUser = await newUser.save();
+    responseHandler.created(res, createdUser);
   } catch {
     responseHandler.error(res);
   }
