@@ -1,11 +1,7 @@
-import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 
-const validate = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => {
+const validate = (req: Request, res: Response, next: NextFunction) => {
   const error = validationResult(req);
   if (!error.isEmpty())
     return res.status(400).json({

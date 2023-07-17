@@ -1,14 +1,18 @@
-import * as express from "express";
-import jsonwebtoken from "jsonwebtoken";
+import { RequestHandler, Request, Response, NextFunction } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 import responseHandler from "../handlers/response.handler";
+import "dotenv/config";
+import userModel from "../models/user.model";
+import { CustomRequest } from "../types/request.type";
 
-const tokenDecode = (req: express.Request) => {
+const tokenDecode = (req: Request) => {
   try {
     const bearerHeader = req.headers["authorization"];
-
     if (bearerHeader) {
       const token = bearerHeader.split(" ")[1];
-      return jsonwebtoken.verify(token, process.env.TOKEN_SECRET!);
+      if (token) return true;
+      return false;
     }
     return false;
   } catch {
@@ -16,16 +20,20 @@ const tokenDecode = (req: express.Request) => {
   }
 };
 
-const auth = async (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
+export const auth: any = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
+  const {
+    params: { email },
+  } = req;
   const decodedToken = tokenDecode(req);
   if (!decodedToken) return responseHandler.unauthorize(res);
 
-  // 모델
-
+  const user = await userModel.findById(email);
+  if (!user) return responseHandler.unauthorize(res);
+  (req as CustomRequest).user = user;
   next();
 };
 
