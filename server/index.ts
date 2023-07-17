@@ -22,9 +22,9 @@ mongoose
     useUnifiedTopology: true,
   } as ConnectOptions)
   .then(() => {
-    console.log("Successfully connected to mongodb");
+    console.log("mongo db와 연결되었습니다.");
     server.listen(port, () => {
-      console.log(`Server is listening on port ${port}`);
+      console.log(`서버 포트는 ${port} 에서 작동중입니다.`);
     });
   })
   .catch((error) => {
