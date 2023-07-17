@@ -1,27 +1,26 @@
 import mongoose, { Schema } from "mongoose";
+import ModelOptionsClass from "./modelOptions";
 
 const messageSchema = new Schema(
   {
-    chatId: {
+    chatRoomId: {
       type: Schema.Types.ObjectId,
-      ref: "Chat",
+      ref: "ChatRoom",
       required: true,
     },
     senderId: {
-      type: String,
+      type: Number,
     },
     text: {
       type: String,
     },
   },
-  {
-    timestamps: true,
-  }
+  ModelOptionsClass.modelOptions
 );
 
 class MessageSchema {
   static getModel() {
-    return mongoose.model("Message", messageSchema);
+    return mongoose.model("ChatMessage", messageSchema);
   }
 }
 

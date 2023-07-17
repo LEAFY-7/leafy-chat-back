@@ -19,6 +19,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    chatRoom: {
+      type: [Number],
+      default: [],
+    },
   },
   ModelOptionsClass.modelOptions
 );
