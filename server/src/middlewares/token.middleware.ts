@@ -20,20 +20,16 @@ const tokenDecode = (req: Request) => {
   }
 };
 
-export const auth: any = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   const {
-    params: { email },
+    params: { userId },
   } = req;
   const decodedToken = tokenDecode(req);
   if (!decodedToken) return responseHandler.unauthorize(res);
 
-  const user = await userModel.findById(email);
+  const user = await userModel.findById(userId);
   if (!user) return responseHandler.unauthorize(res);
-  (req as CustomRequest).user = user;
+  (req as CustomRequest).user = user.id;
   next();
 };
 
