@@ -3,12 +3,12 @@ import ModelOptionsClass from "./modelOptions";
 
 const messageSchema = new Schema(
   {
-    chatRoomId: {
+    chatRoom: {
       type: Schema.Types.ObjectId,
       ref: "ChatRoom",
       required: true,
     },
-    senderId: {
+    sender: {
       type: Number,
     },
     text: {

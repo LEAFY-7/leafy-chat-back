@@ -14,6 +14,11 @@ const chatRoomSchema = new Schema(
     },
     members: {
       type: [Number],
+      required: true,
+    },
+    showDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   ModelOptionsClass.modelOptions
