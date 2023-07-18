@@ -29,7 +29,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 
   const user = await userModel.findById(userId);
   if (!user) return responseHandler.unauthorize(res);
-  (req as CustomRequest).user = user;
+  (req as CustomRequest).user = user.id;
   next();
 };
 
