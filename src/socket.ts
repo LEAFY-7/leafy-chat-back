@@ -1,10 +1,10 @@
 import { Server } from "socket.io";
-import server from "./index";
+import http from "./app";
 import "dotenv/config";
 
-const io = new Server(server, {
+export const io = new Server(http.server, {
   cors: {
-    origin: "http://localhost:3000/",
+    origin: "*",
     credentials: true,
   },
 });
@@ -12,6 +12,14 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("연결되었습니다.");
 
+  socket.on("join", (context, callback) => {
+    console.log("join", context);
+    // const error = true;
+    // if (error) {
+    //   callback({ error: "error" });
+    // }
+    // callback();
+  });
   socket.on("disconnect", () => {
     console.log("연결이 취소되었습니다.");
   });
