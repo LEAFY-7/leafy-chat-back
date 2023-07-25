@@ -10,9 +10,22 @@ const messageSchema = new Schema(
     },
     sender: {
       type: Number,
+      required: true,
     },
     text: {
       type: String,
+      default: "",
+    },
+    type: {
+      type: String,
+      enum: ["notice", "default"], // Enum with allowed values
+      required: true,
+      default: "default",
+    },
+    readCount: {
+      type: Number,
+      required: true,
+      default: 1,
     },
   },
   ModelOptionsClass.modelOptions

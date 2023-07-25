@@ -16,7 +16,11 @@ const chatRoomSchema = new Schema(
       type: [Number],
       required: true,
     },
-    showDeleted: {
+    tag: {
+      type: String,
+      required: true,
+    },
+    isDelete: {
       type: Boolean,
       default: false,
     },

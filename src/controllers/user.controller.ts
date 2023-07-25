@@ -5,7 +5,7 @@ import responseHandler from "../handlers/response.handler";
 const signUp: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {
-      body: { userId, email, name, nickName },
+      body: { userId, email },
     } = req;
     const checkUser = await User.findById(userId);
     if (checkUser) {
@@ -14,8 +14,6 @@ const signUp: RequestHandler = async (req: Request, res: Response) => {
     const newUser = new User({
       _id: userId,
       email,
-      name,
-      nickName,
     });
     const createdUser = await newUser.save();
     responseHandler.created(res, createdUser);
