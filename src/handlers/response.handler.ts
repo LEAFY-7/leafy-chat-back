@@ -19,16 +19,16 @@ const ok = (res: Response, data: any) => responseWithData(res, 200, data);
 
 const created = (res: Response, data: any) => responseWithData(res, 201, data);
 
-const unauthorize = (res: Response) =>
+const unauthorize = (res: Response, message?: string) =>
   responseWithData(res, 401, {
     status: 401,
-    message: "인증이 되지 않았습니다.",
+    message: message || "인증이 되지 않았습니다.",
   });
 
-const notFound = (res: Response) =>
+const notFound = (res: Response, message?: string) =>
   responseWithData(res, 404, {
     status: 404,
-    message: "해당 리소스를 찾지 못했습니다.",
+    message: message || "해당 리소스를 찾지 못했습니다.",
   });
 
 export default {
