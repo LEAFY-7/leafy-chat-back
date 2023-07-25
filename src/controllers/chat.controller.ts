@@ -41,17 +41,19 @@ const getChattingRoom = async (req: Request, res: Response) => {
   }
 };
 
+// 채팅방 개설
 const createChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
       user: { id },
-      body: { guestId },
+      body: { guestId, tag },
     } = req as CustomRequest;
     const chatRoom = new ChatRoom({
       user: id,
       host: id,
       members: [...guestId],
-      showDeleted: false,
+      isDelete: false,
+      tag: tag,
     });
     const createChattingRoom = await chatRoom.save();
     responseHandler.created(res, createChattingRoom);
@@ -60,6 +62,7 @@ const createChattingRoom = async (req: Request, res: Response) => {
   }
 };
 
+// 채팅방 삭제
 const deleteChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
@@ -70,7 +73,12 @@ const deleteChattingRoom = async (req: Request, res: Response) => {
     const chattingRoom = await ChatRoom.findById(roomId);
     if (!chattingRoom) return responseHandler.notFound(res);
 
-    chattingRoom.showDeleted = true;
+    const deleteAuth = chattingRoom.host !== id;
+
+    if (!deleteAuth) {
+      return responseHandler.unauthorize(res, "삭제 권한이 없습니다.");
+    }
+    chattingRoom.isDelete = true;
     await chattingRoom.save();
     responseHandler.created(res, chattingRoom);
   } catch {
