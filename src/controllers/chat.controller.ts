@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ChatRoom from "../models/chat-room.model";
+import ChatRoom from "../models/chat/chat-room.model";
 import { CustomRequest } from "../types/request.type";
 import responseHandler from "../handlers/response.handler";
 
@@ -57,15 +57,7 @@ const getChattingRoom = async (req: Request, res: Response) => {
 // 채팅방이 존재하고 leave 스키마에 나의 정보가 있다면 채팅방을 생성하지 않고 나간 날짜 이후의 메시지를 가져온다.
 
 
-fetch.get(id, yourId){
-  
-}.then(res => {
 
-  if(!res){
-    createChattingRoom()
-  } 
-
-})
 // 
 const createChattingRoom = async (req: Request, res: Response) => {
   try {

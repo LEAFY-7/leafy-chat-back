@@ -34,5 +34,5 @@ class UserSchema {
   }
 }
 
-const userModel = new UserSchema().getModel();
-export default userModel;
+const userModel = new UserSchema();
+export default userModel.getModel();

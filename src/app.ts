@@ -32,4 +32,4 @@ mongoose
 
 const server = http.createServer(app);
 
-export default { server };
+export default server;
