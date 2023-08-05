@@ -3,7 +3,7 @@ import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
 import responseHandler from "../handlers/response.handler";
 import "dotenv/config";
-import userModel from "../models/user.model";
+import userModel from "../models/user/user.model";
 import { CustomRequest } from "../types/request.type";
 
 const tokenDecode = (req: Request) => {

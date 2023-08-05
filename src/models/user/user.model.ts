@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import ModelOptionsClass from "./modelOptions";
+import modelOptions from "../../configs/model.config";
 
 const userSchema = new Schema(
   {
@@ -7,21 +7,31 @@ const userSchema = new Schema(
       type: Number,
       required: true,
     },
+    nickName: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
     },
+    imgUrl: {
+      type: String,
+      required: false,
+    },
     chatRoom: {
-      type: [Number],
+      type: [Schema.Types.ObjectId],
       default: [],
     },
   },
-  ModelOptionsClass.modelOptions
+  modelOptions
 );
 
 class UserSchema {
-  static getModel() {
+  getModel() {
     return mongoose.model("User", userSchema);
   }
 }
-export default UserSchema.getModel();
+
+const userModel = new UserSchema();
+export default userModel.getModel();

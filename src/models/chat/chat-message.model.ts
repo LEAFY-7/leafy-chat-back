@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import ModelOptionsClass from "./modelOptions";
+import modelOptions from "../../configs/model.config";
 
 const messageSchema = new Schema(
   {
@@ -10,31 +10,27 @@ const messageSchema = new Schema(
     },
     sender: {
       type: Number,
+      ref: "User",
       required: true,
     },
     text: {
       type: String,
-      default: "",
-    },
-    type: {
-      type: String,
-      enum: ["notice", "default"], // Enum with allowed values
       required: true,
-      default: "default",
     },
-    readCount: {
-      type: Number,
+    isRead: {
+      type: Boolean,
       required: true,
-      default: 1,
+      default: false,
     },
   },
-  ModelOptionsClass.modelOptions
+  modelOptions
 );
 
 class MessageSchema {
-  static getModel() {
+  getModel() {
     return mongoose.model("ChatMessage", messageSchema);
   }
 }
 
-export default MessageSchema.getModel();
+const chatMessageModel = new MessageSchema();
+export default chatMessageModel.getModel();
