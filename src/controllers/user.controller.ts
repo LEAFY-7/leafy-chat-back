@@ -1,20 +1,27 @@
 import { Request, Response, RequestHandler } from "express";
-import User from "../models/user/user.model";
+import UserModel from "../models/user/user.model";
 import responseHandler from "../handlers/response.handler";
+import errorMessagesConfigs from "../configs/errorMessages.config";
 
 // 회원가입
 const signUp: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {
-      body: { userId, email },
+      body: { userId, email, nickName },
     } = req;
-    const checkUser = await User.findById(userId);
+    const checkUser = await UserModel.findById(userId);
     if (checkUser) {
-      return responseHandler.badRequest(res, "이미 채팅 아이디가 있습니다.");
+      return responseHandler.badRequest(
+        res,
+        errorMessagesConfigs.duplicateUserId
+      );
     }
-    const newUser = new User({
+    const newUser = new UserModel({
       _id: userId,
       email,
+      nickName,
+      imgUrl: "",
+      chatRoom: [],
     });
     const createdUser = await newUser.save();
     responseHandler.created(res, createdUser);
@@ -23,31 +30,27 @@ const signUp: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-export default { signUp };
+// 회원 정보 수정
+const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const {
+      body: { userId, email, nickName, imgUrl },
+    } = req;
 
-/**
- * 메시지 - 소켓
- * 
- * 유저
- * 1. 회원가입 - 이미지 기본 이미지 추가
- * 2. 정보수정 - 이름, 닉네임, 이미지 URL
- * 
- * 
- * 채팅방
- * 1. 채팅방 개설
- * 
- // 호스트, 멤버 입력
+    const user = await UserModel.findById(userId);
 
-// 1. leave 먼저 보고 있으면
-// 2. 방을 안만들고, 
+    if (!user) {
+      return responseHandler.notFound(res, errorMessagesConfigs.notFoundUser);
+    }
 
+    if (email) user.email = email;
+    if (nickName) user.nickName = nickName;
+    if (imgUrl) user.imgUrl = imgUrl;
 
-// 채팅하기 버튼 누르면 나의 아이디와 상대의 아이디로 채팅방을 조회한다. GET /
-
-
-// if
-// 채팅방이 존재하지 않는다면 메시지를 보낼때 새로운 채팅방을 개설하고 메시지를 보낸다. GET return
-// 채팅방이 존재하고 leave 스키마에 나의 정보가 없다면 채팅을 이어간다. 
-// 채팅방이 존재하고 leave 스키마에 나의 정보가 있다면 채팅방을 생성하지 않고 나간 날짜 이후의 메시지를 가져온다.
-
- */
+    const updatedUser = await user.save();
+    responseHandler.ok(res, updatedUser);
+  } catch {
+    responseHandler.error(res);
+  }
+};
+export default { signUp, updateUserInfo };

@@ -1,7 +1,8 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
+import { IUser, IUserModel } from "../../types/user.type";
 import modelOptions from "../../configs/model.config";
 
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema<IUser>(
   {
     _id: {
       type: Number,
@@ -20,7 +21,7 @@ const userSchema = new Schema(
       required: false,
     },
     chatRoom: {
-      type: [Schema.Types.ObjectId],
+      type: [mongoose.Schema.Types.ObjectId],
       default: [],
     },
   },
@@ -28,10 +29,10 @@ const userSchema = new Schema(
 );
 
 class UserSchema {
-  getModel() {
-    return mongoose.model("User", userSchema);
+  getModel(): IUserModel {
+    return mongoose.model<IUser, IUserModel>("User", userSchema);
   }
 }
 
-const userModel = new UserSchema();
-export default userModel.getModel();
+const userModel = new UserSchema().getModel();
+export default userModel;
