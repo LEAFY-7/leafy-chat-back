@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ChatRoom from "../models/chat/chat-room.model";
+import ChatRoomModel from "../models/chat/chat-room.model";
 import { CustomRequest } from "../types/request.type";
 import responseHandler from "../handlers/response.handler";
 
@@ -12,7 +12,7 @@ const getChattingRooms = async (req: Request, res: Response) => {
 
     if (!id) return responseHandler.notFound(res);
 
-    const chattingRooms = await ChatRoom.find({
+    const chattingRooms = await ChatRoomModel.find({
       user: id,
       host: id,
     }).sort("-createdAt");
@@ -33,7 +33,7 @@ const getChattingRoom = async (req: Request, res: Response) => {
 
     if (!id) return responseHandler.notFound(res);
 
-    const chattingRooms = await ChatRoom.findById(roomId);
+    const chattingRooms = await ChatRoomModel.findById(roomId);
 
     responseHandler.ok(res, chattingRooms);
   } catch {
@@ -41,35 +41,18 @@ const getChattingRoom = async (req: Request, res: Response) => {
   }
 };
 
-// 채팅방 개설
-// 호스트, 멤버 입력
-
-// 1. leave 먼저 보고 있으면
-// 2. 방을 안만들고, 
-
-
-// 채팅하기 버튼 누르면 나의 아이디와 상대의 아이디로 채팅방을 조회한다. GET /
-
-
-// if
-// 채팅방이 존재하지 않는다면 메시지를 보낼때 새로운 채팅방을 개설하고 메시지를 보낸다. GET return
-// 채팅방이 존재하고 leave 스키마에 나의 정보가 없다면 채팅을 이어간다. 
-// 채팅방이 존재하고 leave 스키마에 나의 정보가 있다면 채팅방을 생성하지 않고 나간 날짜 이후의 메시지를 가져온다.
-
-
-
-// 
+// 채팅방 생성
 const createChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
       user: { id },
       body: { guestId },
     } = req as CustomRequest;
-    const chatRoom = new ChatRoom({
+
+    const chatRoom = new ChatRoomModel({
       user: id,
       host: id,
-      members: [...guestId],
-      isDelete: false,
+      member: guestId,
     });
     const createChattingRoom = await chatRoom.save();
     responseHandler.created(res, createChattingRoom);
@@ -86,7 +69,7 @@ const deleteChattingRoom = async (req: Request, res: Response) => {
       params: { roomId },
     } = req as CustomRequest;
 
-    const chattingRoom = await ChatRoom.findById(roomId);
+    const chattingRoom = await ChatRoomModel.findById(roomId);
     if (!chattingRoom) return responseHandler.notFound(res);
 
     const deleteAuth = chattingRoom.host !== id;

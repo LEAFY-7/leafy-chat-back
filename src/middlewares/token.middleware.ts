@@ -1,6 +1,4 @@
-import { RequestHandler, Request, Response, NextFunction } from "express";
-import { ParamsDictionary } from "express-serve-static-core";
-import { ParsedQs } from "qs";
+import { Request, Response, NextFunction } from "express";
 import responseHandler from "../handlers/response.handler";
 import "dotenv/config";
 import userModel from "../models/user/user.model";

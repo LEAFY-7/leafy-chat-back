@@ -7,6 +7,11 @@ const leaveStatusSchema = new Schema({
     ref: "User",
     required: true,
   },
+  isLeaved: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   updatedAt: {
     type: Date,
     required: true,
@@ -16,11 +21,6 @@ const leaveStatusSchema = new Schema({
     type: Date,
     required: true,
     default: Date.now,
-  },
-  isLeaved: {
-    type: Boolean,
-    required: true,
-    default: false,
   },
 });
 
@@ -35,7 +35,7 @@ const chatRoomSchema = new Schema(
       type: Number,
       required: true,
     },
-    members: {
+    member: {
       type: Number,
       required: true,
     },
