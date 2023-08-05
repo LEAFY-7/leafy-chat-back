@@ -1,13 +1,11 @@
 import { Response } from "express";
+import responseConfigs from "../configs/response.config";
 
 const responseWithData = (res: Response, statusCode: number, data: any) =>
   res.status(statusCode).json(data);
 
 const error = (res: Response) =>
-  responseWithData(res, 500, {
-    status: 500,
-    message: "DB에 응답을 요청하는 중 에러가 발생했습니다.",
-  });
+  responseWithData(res, 500, responseConfigs.responseMessages.dbError);
 
 const badRequest = (res: Response, message: string) =>
   responseWithData(res, 400, {
@@ -20,16 +18,22 @@ const ok = (res: Response, data: any) => responseWithData(res, 200, data);
 const created = (res: Response, data: any) => responseWithData(res, 201, data);
 
 const unauthorize = (res: Response, message?: string) =>
-  responseWithData(res, 401, {
-    status: 401,
-    message: message || "인증이 되지 않았습니다.",
-  });
+  responseWithData(
+    res,
+    401,
+    message
+      ? { status: 401, message }
+      : responseConfigs.responseMessages.unauthorized
+  );
 
 const notFound = (res: Response, message?: string) =>
-  responseWithData(res, 404, {
-    status: 404,
-    message: message || "해당 리소스를 찾지 못했습니다.",
-  });
+  responseWithData(
+    res,
+    404,
+    message
+      ? { status: 404, message }
+      : responseConfigs.responseMessages.notFound
+  );
 
 export default {
   error,
