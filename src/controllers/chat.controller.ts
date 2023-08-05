@@ -23,7 +23,7 @@ const getChattingRooms = async (req: Request, res: Response) => {
   }
 };
 
-// GET 채팅방 하나
+// GET 채팅방 하나 - 채팅방상세 - page 네이션
 const getChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
@@ -42,18 +42,42 @@ const getChattingRoom = async (req: Request, res: Response) => {
 };
 
 // 채팅방 개설
+// 호스트, 멤버 입력
+
+// 1. leave 먼저 보고 있으면
+// 2. 방을 안만들고, 
+
+
+// 채팅하기 버튼 누르면 나의 아이디와 상대의 아이디로 채팅방을 조회한다. GET /
+
+
+// if
+// 채팅방이 존재하지 않는다면 메시지를 보낼때 새로운 채팅방을 개설하고 메시지를 보낸다. GET return
+// 채팅방이 존재하고 leave 스키마에 나의 정보가 없다면 채팅을 이어간다. 
+// 채팅방이 존재하고 leave 스키마에 나의 정보가 있다면 채팅방을 생성하지 않고 나간 날짜 이후의 메시지를 가져온다.
+
+
+fetch.get(id, yourId){
+  
+}.then(res => {
+
+  if(!res){
+    createChattingRoom()
+  } 
+
+})
+// 
 const createChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
       user: { id },
-      body: { guestId, tag },
+      body: { guestId },
     } = req as CustomRequest;
     const chatRoom = new ChatRoom({
       user: id,
       host: id,
       members: [...guestId],
       isDelete: false,
-      tag: tag,
     });
     const createChattingRoom = await chatRoom.save();
     responseHandler.created(res, createChattingRoom);
@@ -78,7 +102,7 @@ const deleteChattingRoom = async (req: Request, res: Response) => {
     if (!deleteAuth) {
       return responseHandler.unauthorize(res, "삭제 권한이 없습니다.");
     }
-    chattingRoom.isDelete = true;
+    // chattingRoom.isDelete = true;
     await chattingRoom.save();
     responseHandler.created(res, chattingRoom);
   } catch {
