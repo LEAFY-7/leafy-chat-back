@@ -1,7 +1,8 @@
 import { Request, Response, RequestHandler } from "express";
 import UserModel from "../models/user/user.model";
-import responseHandler from "../handlers/response.handler";
+import UserDto from "../dto/user/user.dto";
 import errorMessagesConfigs from "../configs/errorMessages.config";
+import responseHandler from "../handlers/response.handler";
 
 // 회원가입
 const signUp: RequestHandler = async (req: Request, res: Response) => {
@@ -9,14 +10,14 @@ const signUp: RequestHandler = async (req: Request, res: Response) => {
     const {
       body: { userId, email, nickName },
     } = req;
-    const checkUser = await UserModel.findById(userId);
+    const checkUser: UserDto | null = await UserModel.findById(userId);
     if (checkUser) {
       return responseHandler.badRequest(
         res,
         errorMessagesConfigs.duplicateUserId
       );
     }
-    const newUser = new UserModel({
+    const newUser: UserDto | null = new UserModel({
       _id: userId,
       email,
       nickName,
@@ -37,7 +38,7 @@ const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
       body: { userId, email, nickName, imgUrl },
     } = req;
 
-    const user = await UserModel.findById(userId);
+    const user: UserDto | null = await UserModel.findById(userId);
 
     if (!user) {
       return responseHandler.notFound(res, errorMessagesConfigs.notFoundUser);
@@ -47,7 +48,7 @@ const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
     if (nickName) user.nickName = nickName;
     if (imgUrl) user.imgUrl = imgUrl;
 
-    const updatedUser = await user.save();
+    const updatedUser: UserDto = await user.save();
     responseHandler.ok(res, updatedUser);
   } catch {
     responseHandler.error(res);
