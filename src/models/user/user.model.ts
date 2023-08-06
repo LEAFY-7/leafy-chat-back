@@ -1,8 +1,11 @@
-import mongoose from "mongoose";
-import { IUser, IUserModel } from "../../types/user.type";
+import mongoose, { Model } from "mongoose";
 import modelOptions from "../../configs/model.config";
+import UserDto from "../../dto/user/user.dto";
+import ModelKeyConfig from "../../configs/modelKey.config";
 
-const userSchema = new mongoose.Schema<IUser>(
+interface IUserModel extends Model<UserDto & Document> {}
+
+const userSchema = new mongoose.Schema<UserDto>(
   {
     _id: {
       type: Number,
@@ -30,7 +33,7 @@ const userSchema = new mongoose.Schema<IUser>(
 
 class UserSchema {
   getModel(): IUserModel {
-    return mongoose.model<IUser, IUserModel>("User", userSchema);
+    return mongoose.model<UserDto, IUserModel>(ModelKeyConfig.user, userSchema);
   }
 }
 

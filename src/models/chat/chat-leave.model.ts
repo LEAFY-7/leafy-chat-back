@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import ModelOptionsClass from "../modelOptions";
-import modelOptions from "../modelOptions";
+import modelOptions from "../../configs/model.config";
 
 const chatLeaveSchema = new Schema(
   {

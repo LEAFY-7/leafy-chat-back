@@ -15,14 +15,17 @@ describe("회원가입 API 테스트", () => {
   });
 
   it("회원가입 성공", async () => {
+    // Given
     const newUser = {
       userId: 123,
       email: "test@example.com",
       nickName: "TestUser",
     };
 
+    // When
     const res = await chai.request(server).post(END_POINT).send(newUser);
 
+    // Then
     expect(res.status).to.equal(201);
     expect(res.body).to.be.an("object");
     expect(res.body.userId).to.equal(newUser.userId);

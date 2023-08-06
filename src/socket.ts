@@ -3,7 +3,7 @@ import http from "./app";
 import "dotenv/config";
 import { SocketType, InitSocket, NotifyToChat } from "./types/socket.type";
 
-const io = new Server(http.server, {
+const io = new Server(http, {
   cors: {
     origin: "*",
     credentials: true,
