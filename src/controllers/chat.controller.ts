@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import ChatRoomModel from "../models/chat/chat-room.model";
+import ChatRoomDto from "../dto/chat/room.dto";
 import { CustomRequest } from "../types/request.type";
-import responseHandler from "../handlers/response.handler";
 import errorMessagesConfigs from "../configs/errorMessages.config";
+import responseHandler from "../handlers/response.handler";
 
 // GET 사용자의 채팅방 목록
 const getChattingRooms = async (req: Request, res: Response) => {
@@ -24,19 +25,20 @@ const getChattingRooms = async (req: Request, res: Response) => {
   }
 };
 
-// GET 채팅방 하나 - 채팅방상세 - page 네이션
+// GET 채팅방 상세  page 네이션
 const getChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
-      user: { id },
       params: { roomId },
+      room: { host, member },
+      body: { userId },
+      query: { page = 1, pageSize = 10, lastMessageId = "" },
     } = req as CustomRequest;
 
-    if (!id) return responseHandler.notFound(res);
+    if (!userId) return responseHandler.notFound(res);
+    const chatRoom = await ChatRoomModel.findById(roomId);
 
-    const chattingRooms = await ChatRoomModel.findById(roomId);
-
-    responseHandler.ok(res, chattingRooms);
+    responseHandler.ok(res, chatRoom);
   } catch {
     responseHandler.error(res);
   }
@@ -46,38 +48,32 @@ const getChattingRoom = async (req: Request, res: Response) => {
 const deleteChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
-      params: { roomId }, // 호스트_게스트
+      params: { roomId },
+      room: { host, member },
       body: { userId },
     } = req as CustomRequest;
 
-    const chattingRoom = await ChatRoomModel.findById(roomId);
+    const chatRoom: ChatRoomDto | null = await ChatRoomModel.findById(roomId);
 
-    if (!chattingRoom) {
+    if (!chatRoom) {
       return responseHandler.notFound(res, errorMessagesConfigs.notFoundRoom);
     }
 
-    const roomInUser = roomId.split("_"); //  "123" "_" "345"
-    const host = +roomInUser[0] || undefined;
-    const member = +roomInUser[2] || undefined;
-
-    // 호스트랑 멤버 비교
-
-    // 여기다가
-
-    if (host) {
-      // 호스트
-      chattingRoom.hostLeavedStatus.isLeaved = true;
-    } else if (member) {
-      // 멤버
-      chattingRoom.memberLeavedStatus.isLeaved = true;
+    if (chatRoom.member !== userId || chatRoom.host !== userId) {
+      return responseHandler.unauthorize(
+        res,
+        errorMessagesConfigs.unauthorizeRoom
+      );
     }
 
-    // if (!deleteRoom) {
-    //   return responseHandler.unauthorize(res, "삭제 권한이 없습니다.");
-    // }
-    // chattingRoom.isDelete = true;
-    await chattingRoom.save();
-    responseHandler.created(res, chattingRoom);
+    if (host === userId) {
+      chatRoom.hostLeavedStatus.isLeaved = true;
+    }
+    if (member === userId) {
+      chatRoom.memberLeavedStatus.isLeaved = true;
+    }
+    await chatRoom.save();
+    responseHandler.ok(res, "삭제가 완료되었습니다.");
   } catch {
     responseHandler.error(res);
   }
@@ -88,22 +84,3 @@ export default {
   getChattingRoom,
   deleteChattingRoom,
 };
-// // 채팅방 생성
-// const createChattingRoom = async (req: Request, res: Response) => {
-//   try {
-//     const {
-//       user: { id },
-//       body: { guestId, userId },
-//     } = req as CustomRequest;
-
-//     const chatRoom = new ChatRoomModel({
-//       user: id,
-//       host: id,
-//       member: guestId,
-//     });
-//     const createChattingRoom = await chatRoom.save();
-//     responseHandler.created(res, createChattingRoom);
-//   } catch {
-//     responseHandler.error(res);
-//   }
-// };
