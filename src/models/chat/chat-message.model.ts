@@ -1,16 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 import modelOptions from "../../configs/model.config";
+import ModelKeyConfig from "../../configs/modelKey.config";
 
 const messageSchema = new Schema(
   {
     chatRoom: {
       type: Schema.Types.ObjectId,
-      ref: "ChatRoom",
+      ref: ModelKeyConfig.chatRoom,
       required: true,
     },
     sender: {
       type: Number,
-      ref: "User",
+      ref: ModelKeyConfig.user,
       required: true,
     },
     text: {
@@ -28,7 +29,7 @@ const messageSchema = new Schema(
 
 class MessageSchema {
   getModel() {
-    return mongoose.model("ChatMessage", messageSchema);
+    return mongoose.model(ModelKeyConfig.chatMessage, messageSchema);
   }
 }
 
