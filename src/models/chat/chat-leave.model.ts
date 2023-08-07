@@ -1,11 +1,12 @@
 import mongoose, { Schema } from "mongoose";
+import modelKeyConfig from "../../configs/modelKey.config";
 import modelOptions from "../../configs/model.config";
 
 const chatLeaveSchema = new Schema(
   {
     chatRoom: {
       type: Schema.Types.ObjectId,
-      ref: "ChatRoom",
+      ref: modelKeyConfig.chatRoom,
       required: true,
     },
     user: {
@@ -18,7 +19,7 @@ const chatLeaveSchema = new Schema(
 
 class ChatLeaveSchema {
   getModel() {
-    return mongoose.model("ChatLeave", chatLeaveSchema);
+    return mongoose.model(modelKeyConfig.chatLeave, chatLeaveSchema);
   }
 }
 
