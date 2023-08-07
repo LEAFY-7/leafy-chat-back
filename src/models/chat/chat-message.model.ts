@@ -1,7 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
 import ChatMessageDto from "../../dto/chat/message.dto";
-import ModelKeyConfig from "../../configs/modelKey.config";
-import modelOptions from "../../configs/model.config";
+import modelKeyConfig from "../../configs/model-key.config";
+import modelOptions from "../../configs/model-options.config";
 
 interface IChatMessageModel extends Model<ChatMessageDto & Document> {}
 
@@ -9,12 +9,12 @@ const messageSchema = new mongoose.Schema<ChatMessageDto>(
   {
     chatRoom: {
       type: Schema.Types.ObjectId,
-      ref: ModelKeyConfig.chatRoom,
+      ref: modelKeyConfig.chatRoom,
       required: true,
     },
     sender: {
       type: Number,
-      ref: ModelKeyConfig.user,
+      ref: modelKeyConfig.user,
       required: true,
     },
     text: {
@@ -30,14 +30,20 @@ const messageSchema = new mongoose.Schema<ChatMessageDto>(
   modelOptions
 );
 
-class MessageSchema {
-  getModel(): IChatMessageModel {
-    return mongoose.model<ChatMessageDto, IChatMessageModel>(
-      ModelKeyConfig.chatMessage,
+class ChatMessageModel {
+  private model: IChatMessageModel;
+
+  constructor() {
+    this.model = mongoose.model<ChatMessageDto, IChatMessageModel>(
+      modelKeyConfig.chatMessage,
       messageSchema
     );
   }
+
+  getModel(): IChatMessageModel {
+    return this.model;
+  }
 }
 
-const chatMessageModel = new MessageSchema();
-export default chatMessageModel.getModel();
+const ChatMessage = new ChatMessageModel().getModel();
+export default ChatMessage;

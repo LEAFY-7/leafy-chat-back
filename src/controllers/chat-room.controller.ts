@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import ChatRoomModel from "../models/chat/chat-room.model";
+import ChatRoom from "../models/chat/chat-room.model";
 import ChatRoomDto from "../dto/chat/room.dto";
 import { CustomRequest } from "../types/request.type";
-import errorMessagesConfigs from "../configs/errorMessages.config";
+import errorMessagesConfigs from "../configs/error-messages.config";
 import responseHandler from "../handlers/response.handler";
 
 /**
@@ -16,7 +16,7 @@ const getChatRooms = async (req: Request, res: Response) => {
 
     if (!id) return responseHandler.notFound(res);
 
-    const chattingRooms = await ChatRoomModel.find({
+    const chattingRooms = await ChatRoom.find({
       user: id,
       host: id,
     }).sort("-createdAt");
@@ -56,7 +56,7 @@ const createChatRoom = async (req: Request, res: Response) => {
     } = req;
     const [host, member] = roomId.split("_");
 
-    const chatRoom: ChatRoomDto | null = new ChatRoomModel({
+    const chatRoom: ChatRoomDto | null = new ChatRoom({
       _id: roomId,
       host: +host,
       member: +member,
@@ -85,7 +85,7 @@ const deleteChatRoom = async (req: Request, res: Response) => {
       body: { userId },
     } = req as CustomRequest;
 
-    const chatRoom: ChatRoomDto | null = await ChatRoomModel.findById(roomId);
+    const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
 
     if (!chatRoom) {
       return responseHandler.notFound(
