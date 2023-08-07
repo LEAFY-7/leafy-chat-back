@@ -1,8 +1,8 @@
 import mongoose, { Model } from "mongoose";
+import LeaveStatus from "../../dto/chat/leave.dto";
 import ChatRoomDto from "../../dto/chat/room.dto";
 import modelOptions from "../../configs/model.config";
 import ModelKeyConfig from "../../configs/modelKey.config";
-import LeaveStatus from "../../dto/chat/leave.dto";
 
 interface IChatRoomModel extends Model<ChatRoomDto & Document> {}
 

@@ -14,8 +14,7 @@ export default class UserDto extends Document {
     chatRoom: Schema.Types.ObjectId[],
     imgUrl?: string
   ) {
-    super(); // Document 클래스의 생성자 호출
-
+    super();
     this._id = _id;
     this.nickName = nickName;
     this.email = email;
