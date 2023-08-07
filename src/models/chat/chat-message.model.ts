@@ -1,8 +1,11 @@
-import mongoose, { Schema } from "mongoose";
-import modelOptions from "../../configs/model.config";
+import mongoose, { Model, Schema } from "mongoose";
+import ChatMessageDto from "../../dto/chat/message.dto";
 import ModelKeyConfig from "../../configs/modelKey.config";
+import modelOptions from "../../configs/model.config";
 
-const messageSchema = new Schema(
+interface IChatMessageModel extends Model<ChatMessageDto & Document> {}
+
+const messageSchema = new mongoose.Schema<ChatMessageDto>(
   {
     chatRoom: {
       type: Schema.Types.ObjectId,
@@ -28,8 +31,11 @@ const messageSchema = new Schema(
 );
 
 class MessageSchema {
-  getModel() {
-    return mongoose.model(ModelKeyConfig.chatMessage, messageSchema);
+  getModel(): IChatMessageModel {
+    return mongoose.model<ChatMessageDto, IChatMessageModel>(
+      ModelKeyConfig.chatMessage,
+      messageSchema
+    );
   }
 }
 
