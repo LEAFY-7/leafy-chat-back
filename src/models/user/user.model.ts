@@ -1,7 +1,11 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import modelOptions from "../../configs/model.config";
+import UserDto from "../../dto/user/user.dto";
+import ModelKeyConfig from "../../configs/modelKey.config";
 
-const userSchema = new Schema(
+interface IUserModel extends Model<UserDto & Document> {}
+
+const userSchema = new mongoose.Schema<UserDto>(
   {
     _id: {
       type: Number,
@@ -20,7 +24,7 @@ const userSchema = new Schema(
       required: false,
     },
     chatRoom: {
-      type: [Schema.Types.ObjectId],
+      type: [mongoose.Schema.Types.ObjectId],
       default: [],
     },
   },
@@ -28,8 +32,8 @@ const userSchema = new Schema(
 );
 
 class UserSchema {
-  getModel() {
-    return mongoose.model("User", userSchema);
+  getModel(): IUserModel {
+    return mongoose.model<UserDto, IUserModel>(ModelKeyConfig.user, userSchema);
   }
 }
 

@@ -1,11 +1,21 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model } from "mongoose";
+import LeaveStatus from "../../dto/chat/leave.dto";
+import ChatRoomDto from "../../dto/chat/room.dto";
+import ModelKeyConfig from "../../configs/modelKey.config";
 import modelOptions from "../../configs/model.config";
 
-const leaveStatusSchema = new Schema({
+interface IChatRoomModel extends Model<ChatRoomDto & Document> {}
+
+const leaveStatusSchema = new mongoose.Schema<LeaveStatus>({
   userId: {
     type: Number,
-    ref: "User",
+    ref: ModelKeyConfig.user,
     required: true,
+  },
+  isLeaved: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
   updatedAt: {
     type: Date,
@@ -17,36 +27,41 @@ const leaveStatusSchema = new Schema({
     required: true,
     default: Date.now,
   },
-  isLeaved: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
 });
 
-const chatRoomSchema = new Schema(
+const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
   {
+    _id: {
+      type: String,
+      required: true,
+    },
     user: {
       type: Number,
-      ref: "User",
+      ref: ModelKeyConfig.user,
       required: true,
     },
     host: {
       type: Number,
+      ref: ModelKeyConfig.user,
       required: true,
     },
-    members: {
+    member: {
       type: Number,
+      ref: ModelKeyConfig.user,
       required: true,
     },
-    leaveStatus: [leaveStatusSchema],
+    hostLeavedStatus: leaveStatusSchema,
+    memberLeavedStatus: leaveStatusSchema,
   },
   modelOptions
 );
 
 class ChatRoomSchema {
-  getModel() {
-    return mongoose.model("ChatRoom", chatRoomSchema);
+  getModel(): IChatRoomModel {
+    return mongoose.model<ChatRoomDto, IChatRoomModel>(
+      ModelKeyConfig.chatRoom,
+      chatRoomSchema
+    );
   }
 }
 

@@ -12,7 +12,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "types": ["node", "mocha"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
