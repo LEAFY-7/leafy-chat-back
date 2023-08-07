@@ -11,8 +11,8 @@ export default class LeaveStatus {
     createdAt: Date
   ) {
     this._id = _id;
-    (this.isLeaved = isLeaved),
-      (this.updatedAt = updatedAt),
-      (this.createdAt = createdAt);
+    this.isLeaved = isLeaved;
+    this.updatedAt = updatedAt;
+    this.createdAt = createdAt;
   }
 }
