@@ -5,6 +5,7 @@ import { SocketType, InitSocket, NotifyToChat } from "./types/socket.type";
 import ChatRoomModel from "./models/chat/chat-room.model";
 import responseHandler from "./handlers/response.handler";
 import errorMessagesConfig from "./configs/errorMessages.config";
+import socketHandler from "./handlers/socket.handler";
 
 const io = new SocketServer(http, {
   cors: {
@@ -62,17 +63,14 @@ const initSocket = (socket: SocketType) => {
         listener: async (data) => {
           const handshake = socket.handshake;
           const { query } = handshake;
-          const { roomId, name } = data;
+          const { roomId } = data;
 
           const chatRoom = await ChatRoomModel.findById(roomId);
 
-          if (!chatRoom)
-            return responseHandler.notFound(
-              data,
-              errorMessagesConfig.socket.notFoundRoom
-            );
-          console.log(chatRoom);
-          console.log(roomId);
+          if (!chatRoom) {
+            socketHandler.socketError("error", socket);
+          }
+          console.log("chatRoom", chatRoom);
         },
       });
     },
