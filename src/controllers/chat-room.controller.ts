@@ -5,7 +5,9 @@ import { CustomRequest } from "../types/request.type";
 import errorMessagesConfigs from "../configs/errorMessages.config";
 import responseHandler from "../handlers/response.handler";
 
-// GET 사용자의 채팅방 목록
+/**
+ * 채팅방 목록 조회 / GET
+ */
 const getChattingRooms = async (req: Request, res: Response) => {
   try {
     const {
@@ -25,20 +27,23 @@ const getChattingRooms = async (req: Request, res: Response) => {
   }
 };
 
-// GET 채팅방 상세  page 네이션
+/**
+ * 채팅방 상세 조회 / GET
+ *
+ * 보여줄
+ * 1. 총 페이지
+ * 2. PAGE SIZE = 20
+ */
 const getChattingRoom = async (req: Request, res: Response) => {
   try {
     const {
       params: { roomId },
       room: { host, member },
       body: { userId },
-      query: { page = 1, pageSize = 10, lastMessageId = "" },
+      query: { page = 1, pageSize = 20, lastMessageId = "" },
     } = req as CustomRequest;
 
     if (!userId) return responseHandler.notFound(res);
-    const chatRoom = await ChatRoomModel.findById(roomId);
-
-    responseHandler.ok(res, chatRoom);
   } catch {
     responseHandler.error(res);
   }

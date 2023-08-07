@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Request, Response, NextFunction } from "express";
 import ChatRoomModel from "../models/chat/chat-room.model";
 import responseHandler from "../handlers/response.handler";
@@ -39,6 +38,8 @@ const authorizedRoom = async (
 
   const foundRoom = findRoom(req);
   if (!foundRoom) return responseHandler.unauthorize(res);
+
+  // (req as CustomRequest).user = userId;
 
   next();
 };

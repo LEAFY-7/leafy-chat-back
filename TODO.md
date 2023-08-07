@@ -1,17 +1,8 @@
-1. 유저
+1. 채팅방 컨트롤러 구현
 
-- Model 재설정
-- Controller 구현
-  - 회원가입 : 이미지 기본 이미지 추가
-  - 유저정보 수정 : 이름, 닉네임, 이미지 URL
-- Config
-  - mongoose에서 쓰이는 option config
-  - response 메시지 config
-  - 에러 메시지 config
-- Router
-  - Controller 구현 후 라우터 연결
-
-2. 채팅방
+- GET 채팅방 목록 조회
+- GET 채팅방 상세 조회
+- 총 페이지,
 
 - Model 재설정
 - Controller 구현
