@@ -1,13 +1,14 @@
 import mongoose, { Model } from "mongoose";
-import LeaveStatus from "../../dto/chat/leave.dto";
 import ChatRoomDto from "../../dto/chat/room.dto";
 import ModelKeyConfig from "../../configs/modelKey.config";
 import modelOptions from "../../configs/model.config";
+import setDefaultDates from "../../middlewares/chat-room/default-leaveStatus.mddileware";
+import setAuthorization from "../../middlewares/chat-room/default-authorization";
 
 interface IChatRoomModel extends Model<ChatRoomDto & Document> {}
 
-const leaveStatusSchema = new mongoose.Schema<LeaveStatus>({
-  userId: {
+const leaveStatusSchema = new mongoose.Schema({
+  _id: {
     type: Number,
     ref: ModelKeyConfig.user,
     required: true,
@@ -35,11 +36,7 @@ const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
       type: String,
       required: true,
     },
-    user: {
-      type: Number,
-      ref: ModelKeyConfig.user,
-      required: true,
-    },
+
     host: {
       type: Number,
       ref: ModelKeyConfig.user,
@@ -56,12 +53,21 @@ const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
   modelOptions
 );
 
+// 모델 미들웨어
+chatRoomSchema.pre("save", setDefaultDates);
+
 class ChatRoomSchema {
-  getModel(): IChatRoomModel {
-    return mongoose.model<ChatRoomDto, IChatRoomModel>(
+  private model: IChatRoomModel;
+
+  constructor() {
+    this.model = mongoose.model<ChatRoomDto, IChatRoomModel>(
       ModelKeyConfig.chatRoom,
       chatRoomSchema
     );
+  }
+
+  getModel(): IChatRoomModel {
+    return this.model;
   }
 }
 

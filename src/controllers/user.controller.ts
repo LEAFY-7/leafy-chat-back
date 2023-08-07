@@ -14,7 +14,7 @@ const signUp: RequestHandler = async (req: Request, res: Response) => {
     if (checkUser) {
       return responseHandler.badRequest(
         res,
-        errorMessagesConfigs.duplicateUserId
+        errorMessagesConfigs.http.duplicateUserId
       );
     }
     const newUser: UserDto | null = new UserModel({
@@ -41,7 +41,10 @@ const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
     const user: UserDto | null = await UserModel.findById(userId);
 
     if (!user) {
-      return responseHandler.notFound(res, errorMessagesConfigs.notFoundUser);
+      return responseHandler.notFound(
+        res,
+        errorMessagesConfigs.http.notFoundUser
+      );
     }
 
     if (email) user.email = email;
