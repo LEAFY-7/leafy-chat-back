@@ -1,7 +1,7 @@
 import mongoose, { Model } from "mongoose";
-import modelOptions from "../../configs/model.config";
 import UserDto from "../../dto/user/user.dto";
-import ModelKeyConfig from "../../configs/modelKey.config";
+import modelOptions from "../../configs/model-options.config";
+import modelKeyConfigs from "../../configs/model-key.config";
 
 interface IUserModel extends Model<UserDto & Document> {}
 
@@ -31,11 +31,19 @@ const userSchema = new mongoose.Schema<UserDto>(
   modelOptions
 );
 
-class UserSchema {
+class UserModel {
+  private model: IUserModel;
+
+  constructor() {
+    this.model = mongoose.model<UserDto, IUserModel>(
+      modelKeyConfigs.user,
+      userSchema
+    );
+  }
   getModel(): IUserModel {
-    return mongoose.model<UserDto, IUserModel>(ModelKeyConfig.user, userSchema);
+    return this.model;
   }
 }
 
-const userModel = new UserSchema();
-export default userModel.getModel();
+const User = new UserModel().getModel();
+export default User;

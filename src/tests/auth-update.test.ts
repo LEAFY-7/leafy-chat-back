@@ -6,7 +6,7 @@ const chaiHttp = require("chai-http");
 import server from "../app";
 import UserModel from "../models/user/user.model";
 
-const END_POINT = "/chat-api/v1/auth/update-user";
+const END_POINT = "/api/v1/auth/update-user";
 chai.use(chaiHttp);
 
 const userId = 123;

@@ -6,8 +6,9 @@ const chaiHttp = require("chai-http");
 import server from "../app";
 import userModel from "../models/user/user.model";
 
-const END_POINT = "/chat-api/v1/auth/signup";
+const END_POINT = "/api/v1/auth/signup";
 chai.use(chaiHttp);
+const userId = 789;
 
 describe("회원가입 API 테스트", () => {
   before(async () => {
@@ -17,7 +18,7 @@ describe("회원가입 API 테스트", () => {
   it("회원가입 성공", async () => {
     // Given
     const newUser = {
-      userId: 123,
+      userId,
       email: "test@example.com",
       nickName: "TestUser",
     };
@@ -35,7 +36,7 @@ describe("회원가입 API 테스트", () => {
 
   it("중복된 사용자로 회원가입 실패", async () => {
     const duplicateUser = {
-      userId: 123,
+      userId,
       email: "test2@example.com",
       nickName: "TestUser2",
     };

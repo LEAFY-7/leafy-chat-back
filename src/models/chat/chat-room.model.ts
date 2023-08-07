@@ -1,15 +1,15 @@
 import mongoose, { Model } from "mongoose";
-import LeaveStatus from "../../dto/chat/leave.dto";
+import setDefaultDates from "../../middlewares/room-date.mddileware";
 import ChatRoomDto from "../../dto/chat/room.dto";
-import ModelKeyConfig from "../../configs/modelKey.config";
-import modelOptions from "../../configs/model.config";
+import modelOptions from "../../configs/model-options.config";
+import modelKeyConfig from "../../configs/model-key.config";
 
 interface IChatRoomModel extends Model<ChatRoomDto & Document> {}
 
-const leaveStatusSchema = new mongoose.Schema<LeaveStatus>({
-  userId: {
+const leaveStatusSchema = new mongoose.Schema({
+  _id: {
     type: Number,
-    ref: ModelKeyConfig.user,
+    ref: modelKeyConfig.user,
     required: true,
   },
   isLeaved: {
@@ -35,19 +35,15 @@ const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
       type: String,
       required: true,
     },
-    user: {
-      type: Number,
-      ref: ModelKeyConfig.user,
-      required: true,
-    },
+
     host: {
       type: Number,
-      ref: ModelKeyConfig.user,
+      ref: modelKeyConfig.user,
       required: true,
     },
     member: {
       type: Number,
-      ref: ModelKeyConfig.user,
+      ref: modelKeyConfig.user,
       required: true,
     },
     hostLeavedStatus: leaveStatusSchema,
@@ -56,14 +52,23 @@ const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
   modelOptions
 );
 
-class ChatRoomSchema {
-  getModel(): IChatRoomModel {
-    return mongoose.model<ChatRoomDto, IChatRoomModel>(
-      ModelKeyConfig.chatRoom,
+// 모델 미들웨어
+chatRoomSchema.pre("save", setDefaultDates);
+
+class ChatRoomModel {
+  private model: IChatRoomModel;
+
+  constructor() {
+    this.model = mongoose.model<ChatRoomDto, IChatRoomModel>(
+      modelKeyConfig.chatRoom,
       chatRoomSchema
     );
   }
+
+  getModel(): IChatRoomModel {
+    return this.model;
+  }
 }
 
-const chatRoomModel = new ChatRoomSchema();
-export default chatRoomModel.getModel();
+const ChatRoom = new ChatRoomModel().getModel();
+export default ChatRoom;

@@ -8,14 +8,12 @@ import ChatRoomDto from "../dto/chat/room.dto";
 const findRoom = async (req: Request) => {
   try {
     const roomId = req.params.roomId;
+    const [host, member] = roomId.split("_");
     const chatRoom: ChatRoomDto | null = await ChatRoomModel.findById(roomId);
     if (chatRoom) {
-      const roomInUser = chatRoom._id.split("_");
-      const host = +roomInUser[0] || undefined;
-      const member = +roomInUser[2] || undefined;
       if (host && member) {
-        (req as CustomRequest).room.host = host;
-        (req as CustomRequest).room.member = member;
+        (req as CustomRequest).room.host = +host;
+        (req as CustomRequest).room.member = +member;
         return true;
       }
       return false;

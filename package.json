@@ -32,6 +32,9 @@
   },
   "scripts": {
     "start": "nodemon --exec  \"ts-node\"  ./src/server.ts",
-    "test": "mocha -r ts-node/register ./src/tests/*.test.ts"
+    "test": "mocha -r ts-node/register ./src/tests/*.test.ts",
+    "test:auth-signup": "mocha -r ts-node/register ./src/tests/auth-signup.test.ts",
+    "test:auth-update": "mocha -r ts-node/register ./src/tests/chat-update.test.ts",
+    "test:chat-create": "mocha -r ts-node/register ./src/tests/chat-create.test.ts"
   }
 }
