@@ -17,7 +17,7 @@ export type EventEnum = {
 
 export interface InitSocket {
   event: Event;
-  listener: (...args: any[]) => void;
+  listener: (...args: any[] | any) => void;
 }
 export interface NotifyToChat {
   event: Event;
