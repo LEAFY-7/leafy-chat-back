@@ -1,18 +1,18 @@
 export default class LeaveStatus {
-  userId: number;
+  _id: number;
   isLeaved: boolean;
   updatedAt: Date;
   createdAt: Date;
 
   constructor(
-    userId: number,
+    _id: number,
     isLeaved: boolean,
     updatedAt: Date,
     createdAt: Date
   ) {
-    this.userId = userId;
-    this.isLeaved = isLeaved;
-    this.updatedAt = updatedAt;
-    this.createdAt = createdAt;
+    this._id = _id;
+    (this.isLeaved = isLeaved),
+      (this.updatedAt = updatedAt),
+      (this.createdAt = createdAt);
   }
 }
