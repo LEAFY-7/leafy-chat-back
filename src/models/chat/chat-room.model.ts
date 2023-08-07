@@ -2,8 +2,7 @@ import mongoose, { Model } from "mongoose";
 import ChatRoomDto from "../../dto/chat/room.dto";
 import ModelKeyConfig from "../../configs/modelKey.config";
 import modelOptions from "../../configs/model.config";
-import setDefaultDates from "../../middlewares/chat-room/default-leaveStatus.mddileware";
-import setAuthorization from "../../middlewares/chat-room/default-authorization";
+import setDefaultDates from "../../middlewares/room-date.mddileware";
 
 interface IChatRoomModel extends Model<ChatRoomDto & Document> {}
 
