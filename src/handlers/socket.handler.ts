@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import errorMessagesConfig from "../configs/errorMessages.config";
+import errorMessagesConfig from "../configs/error-messages.config";
 
 type ErrorEvent = "error";
 

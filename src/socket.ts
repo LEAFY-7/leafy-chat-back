@@ -4,7 +4,7 @@ import "dotenv/config";
 import { SocketType, InitSocket, NotifyToChat } from "./types/socket.type";
 import ChatRoomModel from "./models/chat/chat-room.model";
 import responseHandler from "./handlers/response.handler";
-import errorMessagesConfig from "./configs/errorMessages.config";
+import errorMessagesConfig from "./configs/error-messages.config";
 import socketHandler from "./handlers/socket.handler";
 
 const io = new SocketServer(http, {

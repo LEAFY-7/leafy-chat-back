@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import modelKeyConfig from "../../configs/modelKey.config";
-import modelOptions from "../../configs/model.config";
+import modelKeyConfig from "../../configs/model-key.config";
+import modelOptions from "../../configs/model-options.config";
 
 const chatLeaveSchema = new Schema(
   {
@@ -17,11 +17,17 @@ const chatLeaveSchema = new Schema(
   modelOptions
 );
 
-class ChatLeaveSchema {
+class ChatLeaveModel {
+  private model;
+
+  constructor() {
+    this.model = mongoose.model(modelKeyConfig.chatLeave, chatLeaveSchema);
+  }
+
   getModel() {
-    return mongoose.model(modelKeyConfig.chatLeave, chatLeaveSchema);
+    return this.model;
   }
 }
 
-const chatLeaveModel = new ChatLeaveSchema();
-export default chatLeaveModel.getModel();
+const ChatLeave = new ChatLeaveModel().getModel();
+export default ChatLeave;

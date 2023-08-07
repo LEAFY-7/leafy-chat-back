@@ -1,8 +1,8 @@
 import express from "express";
-import chatRoomController from "../controllers/chat-room.controller";
+import routeConfigs from "../configs/route.config";
 import tokenMiddleware from "../middlewares/token.middleware";
 import chatRoomMiddleware from "../middlewares/room-token.middleware";
-import routeConfigs from "../configs/routeConfig";
+import chatRoomController from "../controllers/chat-room.controller";
 
 const router = express.Router({ mergeParams: true });
 

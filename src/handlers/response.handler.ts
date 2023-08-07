@@ -1,5 +1,5 @@
 import { Response } from "express";
-import responseConfigs from "../configs/response.config";
+import responseConfigs from "../configs/response-message.config";
 
 const responseWithData = (res: Response, statusCode: number, data: any) =>
   res.status(statusCode).json(data);
