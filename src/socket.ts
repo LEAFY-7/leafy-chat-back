@@ -1,12 +1,15 @@
 import { Server as SocketServer } from "socket.io";
 import http from "./app";
-import "dotenv/config";
 import { SocketType, InitSocket, NotifyToChat } from "./types/socket.type";
-import ChatRoomModel from "./models/chat/chat-room.model";
+import ChatRoom from "./models/chat/chat-room.model";
 import responseHandler from "./handlers/response.handler";
 import errorMessagesConfig from "./configs/error-messages.config";
 import socketHandler from "./handlers/socket.handler";
 
+import "dotenv/config";
+import ChatRoomDto from "./dto/chat/room.dto";
+import ChatMessage from "./models/chat/chat-message.model";
+import ChatMessageDto from "./dto/chat/message.dto";
 const io = new SocketServer(http, {
   cors: {
     origin: "*",
@@ -18,30 +21,13 @@ const globalSpace = io.of("/global");
 const chatRoomSpace = io.of("/chat");
 const messageSpace = io.of("/message");
 
-// io.on("connection", (socket) => {
-//   console.log("연결되었습니다.");
-
-//   socket.on("join", (context, callback) => {
-//     console.log("join", context);
-//     // const error = true;
-//     // if (error) {
-//     //   callback({ error: "error" });
-//     // }
-
-//     const { userId } = context;
-//     if (!userId) {
-//     }
-//   });
-//   socket.on("disconnect", () => {
-//     console.log("연결이 취소되었습니다.");
-//   });
-// });
-
 chatRoomSpace.on("connection", (socket) => {
   console.log("채팅방이 연결되었습니다.");
-  const { watchJoin } = initSocket(socket);
+  console.log("여기", socket);
+  const { watchJoin, watchSend } = initSocket(socket);
 
   watchJoin();
+  watchSend();
 });
 
 const initSocket = (socket: SocketType) => {
@@ -52,29 +38,71 @@ const initSocket = (socket: SocketType) => {
   }
 
   function notifyToChat({ event, data }: NotifyToChat) {
-    console.log("chatSpace 데이터를 emit합니다.");
+    console.log(`${event}에 대해서 ${data}를 emit합니다.`);
     chatRoomSpace.emit(event, data);
   }
 
   return {
+    // join in room
     watchJoin: () => {
       watchEvent({
         event: "join",
         listener: async (data) => {
-          const handshake = socket.handshake;
-          const { query } = handshake;
-          const { roomId } = data;
+          const handshake = socket.handshake; // const { query } = handshake;
+          const { roomId, myId } = data;
+          socket.join(roomId);
 
-          const chatRoom = await ChatRoomModel.findById(roomId);
+          const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
 
           if (!chatRoom) {
-            socketHandler.socketError("error", socket);
+            return socketHandler.socketError("error", socket);
           }
-          console.log("chatRoom", chatRoom);
+
+          const isMyIdHost = chatRoom.host === +myId;
+          const isYouIdIdMember = chatRoom.member === +myId;
+
+          if (!isMyIdHost && !isYouIdIdMember) {
+            return socketHandler.unauthorize("unauthorize", socket);
+          }
+
+          const messages: ChatMessageDto[] = await ChatMessage.find({
+            chatRoom: roomId,
+          })
+            .sort({ createdAt: -1 })
+            .limit(20);
+
+          notifyToChat({
+            event: "messageHistory",
+            data: messages,
+          });
+        },
+      });
+    },
+    // Send a Message
+    watchSend: () => {
+      watchEvent({
+        event: "send",
+        listener: async (data) => {
+          const { roomId, myId, text } = data;
+
+          const chatMessage: ChatMessageDto = new ChatMessage({
+            chatRoom: roomId,
+            sender: myId,
+            text,
+            isRead: false,
+          });
+
+          try {
+            await chatMessage.save();
+          } catch (error) {
+            console.error("Error saving chat message:", error);
+          }
+          notifyToChat({
+            event: "receiveMessage",
+            data: chatMessage,
+          });
         },
       });
     },
   };
 };
-// const ChatRoom = await ChatRoomModel.find({})
-// const {room} = data

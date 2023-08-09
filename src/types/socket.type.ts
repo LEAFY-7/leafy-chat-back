@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import SocketConfigs from "../configs/socket.config";
 
 export type SocketType = Socket<
   DefaultEventsMap,
@@ -8,18 +9,19 @@ export type SocketType = Socket<
   any
 >;
 
-export type Event = "join" | "send";
+export type Event = "join" | "send" | "messageHistory" | "receiveMessage";
 
 export type EventEnum = {
   JOIN: "join";
   SEND: "send";
 };
 
+// keyof typeof socketConfigs
 export interface InitSocket {
   event: Event;
   listener: (...args: any[] | any) => void;
 }
 export interface NotifyToChat {
   event: Event;
-  data: any[];
+  data: any[] | any;
 }
