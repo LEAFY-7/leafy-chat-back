@@ -1,21 +1,27 @@
 import { Document, Schema } from "mongoose";
 
 export default class ChatMessageDto extends Document {
-  chatRoom: Schema.Types.ObjectId;
+  chatRoom: string;
   sender: number;
   text: string;
   isRead: boolean;
+  updatedAt: Date;
+  createdAt: Date;
 
   constructor(
-    chatRoom: Schema.Types.ObjectId,
+    chatRoom: string,
     sender: number,
     text: string,
-    isRead: boolean
+    isRead: boolean,
+    updatedAt: Date,
+    createdAt: Date
   ) {
     super();
     this.chatRoom = chatRoom;
     this.sender = sender;
     this.text = text;
     this.isRead = isRead;
+    this.updatedAt = updatedAt;
+    this.createdAt = createdAt;
   }
 }
