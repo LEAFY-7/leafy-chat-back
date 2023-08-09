@@ -7,5 +7,6 @@ const http = {
 
 const socket = {
   notFoundRoom: "채팅방을 찾을 수 없습니다. ",
+  unauthorizedRoom: "권한이 없습니다.",
 };
 export default { http, socket };
