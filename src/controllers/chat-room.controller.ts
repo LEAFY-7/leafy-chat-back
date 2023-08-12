@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import ChatRoom from "../models/chat/chat-room.model";
 import ChatRoomDto from "../dto/chat/room.dto";
-import { CustomRequest } from "../@types/request.type";
 import errorMessagesConfigs from "../configs/error-messages.config";
 import responseHandler from "../handlers/response.handler";
+import { CustomRequest } from "../@types/request.type";
 
 /**
- * 채팅방 목록 조회 / GET
+ * @description 채팅방 조회
  */
 const getChatRooms = async (req: Request, res: Response) => {
   try {
@@ -28,11 +28,7 @@ const getChatRooms = async (req: Request, res: Response) => {
 };
 
 /**
- * 채팅방 상세 조회 / GET
- *
- * 보여줄
- * 1. 총 페이지
- * 2. PAGE SIZE = 20
+ * @description 채팅방 상세 조회
  */
 const getChatRoom = async (req: Request, res: Response) => {
   try {
@@ -49,6 +45,9 @@ const getChatRoom = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @description 채팅방 생성
+ */
 const createChatRoom = async (req: Request, res: Response) => {
   try {
     const {
@@ -84,7 +83,9 @@ const createChatRoom = async (req: Request, res: Response) => {
   }
 };
 
-// 채팅방 삭제
+/**
+ * @description 채팅방 삭제
+ */
 const deleteChatRoom = async (req: Request, res: Response) => {
   try {
     const {

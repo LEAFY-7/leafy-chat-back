@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import responseHandler from "../handlers/response.handler";
-import { CustomRequest } from "../@types/request.type";
 import mongoose from "mongoose";
 import ChatMessage from "../models/chat/chat-message.model";
 import ChatMessageDto from "../dto/chat/message.dto";
+import responseHandler from "../handlers/response.handler";
+import { CustomRequest } from "../@types/request.type";
 
 /**
- * 채팅방 메시지 조회
+ * @description 메세지 조회 - 이전 데이터 무한스크롤
  */
 const getPrevChatRoomMessages = async (req: Request, res: Response) => {
   try {
@@ -49,6 +49,9 @@ const getPrevChatRoomMessages = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @description 메세지 조회 - 이후 데이터 무한스크롤
+ */
 const getNextChatRoomMessages = async (req: Request, res: Response) => {
   try {
     const {

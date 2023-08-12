@@ -4,7 +4,9 @@ import UserDto from "../dto/user/user.dto";
 import errorMessagesConfigs from "../configs/error-messages.config";
 import responseHandler from "../handlers/response.handler";
 
-// 회원가입
+/**
+ * @description 회원가입
+ */
 const signUp: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {
@@ -31,7 +33,9 @@ const signUp: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-// 회원 정보 수정
+/**
+ * @description 회원정보 수정
+ */
 const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {

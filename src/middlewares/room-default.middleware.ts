@@ -1,3 +1,7 @@
+/**
+ * @description 채팅방 모델 미들웨어 - 초기 Leave의 상태 정의
+ * @param this ChatRoom
+ */
 function setDefaultLeave(this: any) {
   const date = new Date();
   if (this.hostLeaveStatus.createdAt && this.memberLeaveStatus.createdAt) {
@@ -13,7 +17,10 @@ function setDefaultLeave(this: any) {
     this.memberLeaveStatus.createdAt = date;
   }
 }
-
+/**
+ * @description 채팅방 모델 미들웨어 - 초기 delete의 상태 정의
+ * @param this ChatRoom
+ */
 function setDefaultDelete(this: any) {
   const date = new Date();
   if (this.hostDeletedStatus.createdAt && this.memberDeletedStatus.createdAt) {

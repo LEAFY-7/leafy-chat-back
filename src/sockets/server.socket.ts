@@ -1,6 +1,7 @@
 import { Server as SocketServer } from "socket.io";
 import http from "../app";
 import chatRoomSocket from "./chat-room.socket";
+import globalSocket from "./global.socket";
 
 const io = new SocketServer(http, {
   cors: {
@@ -11,10 +12,10 @@ const io = new SocketServer(http, {
 
 export const globalSpace = io.of("/global");
 export const chatRoomSpace = io.of("/chat");
-export const messageSpace = io.of("/message");
 
 globalSpace.on("connection", (socket) => {
   console.log("알람을 연결하였습니다.");
+  const { watchJoin } = globalSocket(socket);
 });
 
 chatRoomSpace.on("connection", (socket) => {
