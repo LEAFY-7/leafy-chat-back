@@ -23,6 +23,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "forever": "^4.0.3",
     "jsonwebtoken": "^9.0.1",
     "mocha": "^10.2.0",
     "mongoose": "^7.3.4",
@@ -32,6 +33,7 @@
   },
   "scripts": {
     "start": "nodemon --exec  \"ts-node\"  ./src/server.ts",
+    "forever": "forever start -c \"npm run start\" ",
     "test": "mocha -r ts-node/register ./src/tests/*.test.ts",
     "test:auth-signup": "mocha -r ts-node/register ./src/tests/auth-signup.test.ts",
     "test:auth-update": "mocha -r ts-node/register ./src/tests/chat-update.test.ts",

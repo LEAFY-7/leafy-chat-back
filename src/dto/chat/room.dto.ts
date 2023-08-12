@@ -7,13 +7,17 @@ export default class ChatRoomDto extends Document {
   member: number;
   hostLeavedStatus: LeaveStatus;
   memberLeavedStatus: LeaveStatus;
+  updatedAt: Date;
+  createdAt: Date;
 
   constructor(
     _id: string,
     host: number,
     member: number,
     hostLeavedStatus: LeaveStatus,
-    memberLeavedStatus: LeaveStatus
+    memberLeavedStatus: LeaveStatus,
+    updatedAt: Date,
+    createdAt: Date
   ) {
     super();
     this._id = _id;
@@ -21,5 +25,7 @@ export default class ChatRoomDto extends Document {
     this.member = member;
     this.hostLeavedStatus = hostLeavedStatus;
     this.memberLeavedStatus = memberLeavedStatus;
+    this.updatedAt = updatedAt;
+    this.createdAt = createdAt;
   }
 }

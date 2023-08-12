@@ -8,7 +8,7 @@ interface IChatMessageModel extends Model<ChatMessageDto & Document> {}
 const messageSchema = new mongoose.Schema<ChatMessageDto>(
   {
     chatRoom: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: modelKeyConfig.chatRoom,
       required: true,
     },
