@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import responseHandler from "../handlers/response.handler";
-import { CustomRequest } from "../types/request.type";
+import { CustomRequest } from "../@types/request.type";
 import mongoose from "mongoose";
 import ChatMessage from "../models/chat/chat-message.model";
 import ChatMessageDto from "../dto/chat/message.dto";

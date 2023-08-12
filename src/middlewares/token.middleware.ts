@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import responseHandler from "../handlers/response.handler";
 import "dotenv/config";
 import userModel from "../models/user/user.model";
-import { CustomRequest } from "../types/request.type";
+import { CustomRequest } from "../@types/request.type";
 
 const tokenDecode = (req: Request) => {
   try {

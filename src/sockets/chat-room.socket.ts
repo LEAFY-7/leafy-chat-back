@@ -1,9 +1,11 @@
-import ChatRoom from "../models/chat/chat-room.model";
-import { SocketModel } from "../models/socket/socket.model";
+import { chatRoomSpace } from "./server.socket";
 
-import ChatMessage from "../models/chat/chat-message.model";
 import ChatRoomDto from "../dto/chat/room.dto";
 import ChatMessageDto from "../dto/chat/message.dto";
+
+import SocketModel from "../models/socket/socket.model";
+import ChatRoom from "../models/chat/chat-room.model";
+import ChatMessage from "../models/chat/chat-message.model";
 
 const chatRoomSocket = (socket: SocketModel["socket"]) => {
   console.log("소켓이 연결되었습니다.");
@@ -14,7 +16,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
 
   function notifyToChat({ event, data, to }: SocketModel["notifyToChat"]) {
     console.log(`${event}에 대해서 ${data}를 emit합니다.`);
-    socket.to(to).emit(event, data);
+    chatRoomSpace.to(to).emit(event, data);
   }
 
   return {

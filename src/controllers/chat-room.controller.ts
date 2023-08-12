@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import ChatRoom from "../models/chat/chat-room.model";
 import ChatRoomDto from "../dto/chat/room.dto";
-import { CustomRequest } from "../types/request.type";
+import { CustomRequest } from "../@types/request.type";
 import errorMessagesConfigs from "../configs/error-messages.config";
 import responseHandler from "../handlers/response.handler";
 

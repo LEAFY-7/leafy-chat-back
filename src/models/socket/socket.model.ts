@@ -11,7 +11,7 @@ type SocketType = Socket<
   any
 >;
 
-export class SocketModel {
+class SocketModel {
   public socket: SocketType;
   public event: Event;
   public watchEvent: WatchEventModel;
@@ -29,3 +29,5 @@ export class SocketModel {
     this.notifyToChat = notifyToChat;
   }
 }
+
+export default SocketModel;
