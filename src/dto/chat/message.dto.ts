@@ -1,4 +1,4 @@
-import { Document, Schema } from "mongoose";
+import { Document } from "mongoose";
 
 export default class ChatMessageDto extends Document {
   chatRoom: string;

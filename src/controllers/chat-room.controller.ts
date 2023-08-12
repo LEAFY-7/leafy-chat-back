@@ -63,10 +63,16 @@ const createChatRoom = async (req: Request, res: Response) => {
       _id: roomId,
       host: +me,
       member: +you,
-      hostLeavedStatus: {
+      hostDeletedStatus: {
         _id: +me,
       },
-      memberLeavedStatus: {
+      memberDeletedStatus: {
+        _id: +you,
+      },
+      hostLeaveStatus: {
+        _id: +me,
+      },
+      memberLeaveStatus: {
         _id: +you,
       },
     });
@@ -104,10 +110,10 @@ const deleteChatRoom = async (req: Request, res: Response) => {
     }
 
     if (host === userId) {
-      chatRoom.hostLeavedStatus.isLeaved = true;
+      chatRoom.hostDeletedStatus.isDeleted = true;
     }
     if (member === userId) {
-      chatRoom.memberLeavedStatus.isLeaved = true;
+      chatRoom.memberDeletedStatus.isDeleted = true;
     }
     await chatRoom.save();
     responseHandler.ok(res, "삭제가 완료되었습니다.");

@@ -1,5 +1,5 @@
-import mongoose, { Model } from "mongoose";
-import setDefaultDates from "../../middlewares/room-date.mddileware";
+import mongoose, { Model, Schema } from "mongoose";
+import chatRoomDefaultMiddleware from "../../middlewares/room-default.middleware";
 import ChatRoomDto from "../../dto/chat/room.dto";
 import modelOptions from "../../configs/model-options.config";
 import modelKeyConfig from "../../configs/model-key.config";
@@ -12,7 +12,31 @@ const leaveStatusSchema = new mongoose.Schema({
     ref: modelKeyConfig.user,
     required: true,
   },
-  isLeaved: {
+  lastLog: {
+    type: Schema.Types.ObjectId,
+    ref: modelKeyConfig.chatMessage,
+    required: false,
+    default: null,
+  },
+  updatedAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+});
+
+const deletedStatusSchema = new mongoose.Schema({
+  _id: {
+    type: Number,
+    ref: modelKeyConfig.user,
+    required: true,
+  },
+  isDeleted: {
     type: Boolean,
     required: true,
     default: false,
@@ -46,14 +70,17 @@ const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
       ref: modelKeyConfig.user,
       required: true,
     },
-    hostLeavedStatus: leaveStatusSchema,
-    memberLeavedStatus: leaveStatusSchema,
+    hostDeletedStatus: deletedStatusSchema,
+    memberDeletedStatus: deletedStatusSchema,
+    hostLeaveStatus: leaveStatusSchema,
+    memberLeaveStatus: leaveStatusSchema,
   },
   modelOptions
 );
 
-// 모델 미들웨어
-chatRoomSchema.pre("save", setDefaultDates);
+// 채팅방 모델 기본 미들웨어
+chatRoomSchema.pre("save", chatRoomDefaultMiddleware.setDefaultDelete);
+chatRoomSchema.pre("save", chatRoomDefaultMiddleware.setDefaultLeave);
 
 class ChatRoomModel {
   private model: IChatRoomModel;
