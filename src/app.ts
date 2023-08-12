@@ -2,9 +2,9 @@ import http from "http";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
 import mongoose, { ConnectOptions } from "mongoose";
 import "dotenv/config";
+
 import routes from "./routes";
 
 const { CONNECTION } = process.env;
