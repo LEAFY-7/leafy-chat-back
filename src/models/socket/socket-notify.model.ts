@@ -1,7 +1,8 @@
-import { Event } from "./socket-event.model";
+import EventModel from "./socket-event.model";
 
-export class NotifyToChatModel {
-  public event: Event = "join";
+class NotifyToChatModel {
+  public event: EventModel = EventModel.JOIN;
   public data: any[] | any = [];
   public to: string = "";
 }
+export default NotifyToChatModel;

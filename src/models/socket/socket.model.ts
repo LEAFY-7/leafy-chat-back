@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { Event } from "./socket-event.model";
-import { WatchEventModel } from "./socket-watch.model";
-import { NotifyToChatModel } from "./socket-notify.model";
+import EventModel from "./socket-event.model";
+import WatchEventModel from "./socket-watch.model";
+import NotifyToChatModel from "./socket-notify.model";
 
 type SocketType = Socket<
   DefaultEventsMap,
@@ -13,13 +13,13 @@ type SocketType = Socket<
 
 class SocketModel {
   public socket: SocketType;
-  public event: Event;
+  public event: EventModel;
   public watchEvent: WatchEventModel;
   public notifyToChat: NotifyToChatModel;
 
   constructor(
     socket: SocketType,
-    event: Event,
+    event: EventModel,
     watchEvent: WatchEventModel,
     notifyToChat: NotifyToChatModel
   ) {

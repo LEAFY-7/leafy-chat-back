@@ -3,9 +3,10 @@ import { chatRoomSpace } from "./server.socket";
 import ChatRoomDto from "../dto/chat/room.dto";
 import ChatMessageDto from "../dto/chat/message.dto";
 
-import SocketModel from "../models/socket/socket.model";
 import ChatRoom from "../models/chat/chat-room.model";
 import ChatMessage from "../models/chat/chat-message.model";
+import SocketModel from "../models/socket/socket.model";
+import EventModel from "../models/socket/socket-event.model";
 
 const chatRoomSocket = (socket: SocketModel["socket"]) => {
   console.log("소켓이 연결되었습니다.");
@@ -22,7 +23,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
   return {
     watchJoin: () => {
       watchEvent({
-        event: "join", // 채팅방 접속
+        event: EventModel.JOIN, // 채팅방 접속
         listener: async (data) => {
           const handshake = socket.handshake; // const { query } = handshake;
           const { roomId, me, you } = data;
@@ -79,7 +80,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
           }
 
           return notifyToChat({
-            event: "messageHistory",
+            event: EventModel.MESSAGE_HISTORY,
             data: messages,
             to: roomId,
           });
@@ -88,7 +89,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
     },
     watchSend: () => {
       watchEvent({
-        event: "send", // 메세지 보내기
+        event: EventModel.SEND, // 메세지 보내기
         listener: async (data) => {
           const { roomId, me, text } = data;
 
@@ -105,7 +106,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
             console.error("Error saving chat message:", error);
           }
           return notifyToChat({
-            event: "receiveMessage",
+            event: EventModel.RECEIVE_MESSAGE,
             data: chatMessage,
             to: roomId,
           });
@@ -114,7 +115,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
     },
     watchDisconnect: () => {
       watchEvent({
-        event: "roomDisconnect", // 연결해제
+        event: EventModel.ROOM_DISCONNECT, // 연결해제
         listener: async (data) => {
           const { roomId } = data;
           const isRoom = (await ChatRoom.findById(roomId)) !== null;

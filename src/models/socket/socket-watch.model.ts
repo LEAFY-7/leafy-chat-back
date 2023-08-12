@@ -1,6 +1,7 @@
-import { Event } from "./socket-event.model";
+import EventModel from "./socket-event.model";
 
-export class WatchEventModel {
-  public event: Event = "join";
+class WatchEventModel {
+  public event: EventModel = EventModel.JOIN;
   public listener: (...args: any[] | any) => void = () => {};
 }
+export default WatchEventModel;
