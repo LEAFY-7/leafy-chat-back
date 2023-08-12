@@ -52,22 +52,24 @@ const getChatRoom = async (req: Request, res: Response) => {
 const createChatRoom = async (req: Request, res: Response) => {
   try {
     const {
-      body: { roomId },
+      body: { me, you },
     } = req;
-    const [host, member] = roomId.split("_");
+
+    if (!me || !you) return;
+    const sortedValues = [me, you].sort();
+    const roomId = sortedValues.join("_");
 
     const chatRoom: ChatRoomDto | null = new ChatRoom({
       _id: roomId,
-      host: +host,
-      member: +member,
+      host: +me,
+      member: +you,
       hostLeavedStatus: {
-        _id: +host,
+        _id: +me,
       },
       memberLeavedStatus: {
-        _id: +member,
+        _id: +you,
       },
     });
-    console.log("pass", chatRoom);
 
     const createRoom = await chatRoom.save();
     responseHandler.created(res, createRoom);
