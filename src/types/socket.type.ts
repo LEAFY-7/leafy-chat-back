@@ -9,7 +9,13 @@ export type SocketType = Socket<
   any
 >;
 
-export type Event = "join" | "send" | "messageHistory" | "receiveMessage";
+export type Event =
+  | "join"
+  | "send"
+  | "messageHistory"
+  | "receiveMessage"
+  | "disconnect"
+  | "roomDisconnect";
 
 export type EventEnum = {
   JOIN: "join";
@@ -24,4 +30,5 @@ export interface InitSocket {
 export interface NotifyToChat {
   event: Event;
   data: any[] | any;
+  to: string;
 }

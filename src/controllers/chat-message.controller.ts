@@ -8,36 +8,73 @@ import ChatMessageDto from "../dto/chat/message.dto";
 /**
  * 채팅방 메시지 조회
  */
-const getChatRoomMessages = async (req: Request, res: Response) => {
+const getPrevChatRoomMessages = async (req: Request, res: Response) => {
   try {
     const {
       params: { roomId },
-      // room: { host, member },
       query: { page = 1, pageSize = 20, lastMessageId = "" },
     } = req as CustomRequest;
 
     if (!roomId) return responseHandler.notFound(res);
 
+    if (typeof lastMessageId !== "string") {
+      return responseHandler.badRequest(res, "잘못된 정보입니다.");
+    }
+
     const options = {
       skip: (+page - 1) * +pageSize,
       limit: +pageSize,
-      sort: { _id: -1 },
     };
+
     const query = lastMessageId
       ? {
-          _id: { $lt: new mongoose.Types.ObjectId(lastMessageId as string) },
+          _id: { $lt: new mongoose.Types.ObjectId(lastMessageId) },
           chatRoom: roomId,
         }
       : { chatRoom: roomId };
+
     const messages: ChatMessageDto[] = await ChatMessage.find(
       query,
       null,
       options
+    ).sort({ createdAt: -1 });
+
+    const sortedMessages = messages.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
-    responseHandler.ok(res, messages);
+
+    responseHandler.ok(res, sortedMessages);
   } catch {
     responseHandler.error(res);
   }
 };
 
-export default { getChatRoomMessages };
+const getNextChatRoomMessages = async (req: Request, res: Response) => {
+  try {
+    const {
+      params: { roomId },
+      query: { page = 1, pageSize = 20, lastMessageId = "" },
+    } = req as CustomRequest;
+
+    if (!roomId) return responseHandler.notFound(res);
+
+    if (typeof lastMessageId !== "string") {
+      return responseHandler.badRequest(res, "잘못된 정보입니다.");
+    }
+
+    const query = lastMessageId
+      ? {
+          _id: { $gt: new mongoose.Types.ObjectId(lastMessageId) },
+          chatRoom: roomId,
+        }
+      : { chatRoom: roomId };
+    const messages: ChatMessageDto[] = await ChatMessage.find(query, null)
+      .sort({ createdAt: 1 })
+      .limit(+pageSize);
+
+    responseHandler.ok(res, messages);
+  } catch {
+    responseHandler.error(res);
+  }
+};
+export default { getPrevChatRoomMessages, getNextChatRoomMessages };
