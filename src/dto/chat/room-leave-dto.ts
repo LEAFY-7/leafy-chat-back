@@ -1,17 +1,19 @@
+import { Schema } from "mongoose";
+
 export default class LeaveStatus {
   _id: number;
-  isLeaved: boolean;
+  lastLog: Schema.Types.ObjectId;
   updatedAt: Date;
   createdAt: Date;
 
   constructor(
     _id: number,
-    isLeaved: boolean,
+    lastLog: Schema.Types.ObjectId,
     updatedAt: Date,
     createdAt: Date
   ) {
     this._id = _id;
-    this.isLeaved = isLeaved;
+    this.lastLog = lastLog;
     this.updatedAt = updatedAt;
     this.createdAt = createdAt;
   }

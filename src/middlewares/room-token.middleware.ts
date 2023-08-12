@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import ChatRoomModel from "../models/chat/chat-room.model";
-import responseHandler from "../handlers/response.handler";
-import userModel from "../models/chat/chat-room.model";
-import { CustomRequest } from "../types/request.type";
+
 import ChatRoomDto from "../dto/chat/room.dto";
+import responseHandler from "../handlers/response.handler";
+import ChatRoomModel from "../models/chat/chat-room.model";
+import userModel from "../models/chat/chat-room.model";
+import { CustomRequest } from "../@types/request.type";
 
 const findRoom = async (req: Request) => {
   try {

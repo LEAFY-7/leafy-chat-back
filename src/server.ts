@@ -1,6 +1,6 @@
 import http from "./app";
 import "dotenv/config";
-require("./socket");
+require("./sockets/server.socket");
 
 const { PORT } = process.env;
 const port = PORT || 5000;

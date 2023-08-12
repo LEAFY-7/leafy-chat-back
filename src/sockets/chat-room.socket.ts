@@ -1,59 +1,33 @@
-import "dotenv/config";
-import { Server as SocketServer } from "socket.io";
-import http from "./app";
-import { SocketType, InitSocket, NotifyToChat } from "./types/socket.type";
-import ChatRoom from "./models/chat/chat-room.model";
-import responseHandler from "./handlers/response.handler";
-import errorMessagesConfig from "./configs/error-messages.config";
-import socketHandler from "./handlers/socket.handler";
+import { chatRoomSpace } from "./server.socket";
 
-import ChatMessage from "./models/chat/chat-message.model";
-import ChatRoomDto from "./dto/chat/room.dto";
-import ChatMessageDto from "./dto/chat/message.dto";
+import ChatRoomDto from "../dto/chat/room.dto";
+import ChatMessageDto from "../dto/chat/message.dto";
 
-const io = new SocketServer(http, {
-  cors: {
-    origin: "*",
-    credentials: true,
-  },
-});
+import ChatRoom from "../models/chat/chat-room.model";
+import ChatMessage from "../models/chat/chat-message.model";
+import SocketModel from "../models/socket/socket.model";
+import EventModel from "../models/socket/socket-event.model";
 
-const globalSpace = io.of("/global");
-const chatRoomSpace = io.of("/chat");
-const messageSpace = io.of("/message");
-
-chatRoomSpace.on("connection", (socket) => {
-  console.log("채팅방이 연결되었습니다.");
-
-  const { watchJoin, watchSend, watchDisconnect } = initSocket(socket);
-
-  watchJoin();
-  watchSend();
-  watchDisconnect();
-});
-
-const initSocket = (socket: SocketType) => {
+const chatRoomSocket = (socket: SocketModel["socket"]) => {
   console.log("소켓이 연결되었습니다.");
 
-  function watchEvent({ event, listener }: InitSocket) {
+  function watchEvent({ event, listener }: SocketModel["watchEvent"]) {
     socket.on(event, listener);
   }
 
-  function notifyToChat({ event, data, to }: NotifyToChat) {
+  function notifyToChat({ event, data, to }: SocketModel["notifyToChat"]) {
     console.log(`${event}에 대해서 ${data}를 emit합니다.`);
     chatRoomSpace.to(to).emit(event, data);
   }
 
   return {
-    // 채팅방 접속
     watchJoin: () => {
       watchEvent({
-        event: "join",
+        event: EventModel.JOIN, // 채팅방 접속
         listener: async (data) => {
           const handshake = socket.handshake; // const { query } = handshake;
           const { roomId, me, you } = data;
 
-          console.log(roomId, me, you);
           const isRoom = (await ChatRoom.findById(roomId)) !== null;
 
           let chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
@@ -63,10 +37,16 @@ const initSocket = (socket: SocketType) => {
               _id: roomId,
               host: +me,
               member: +you,
-              hostLeavedStatus: {
+              hostDeletedStatus: {
                 _id: +me,
               },
-              memberLeavedStatus: {
+              memberDeletedStatus: {
+                _id: +you,
+              },
+              hostLeaveStatus: {
+                _id: +me,
+              },
+              memberLeaveStatus: {
                 _id: +you,
               },
             });
@@ -100,17 +80,16 @@ const initSocket = (socket: SocketType) => {
           }
 
           return notifyToChat({
-            event: "messageHistory",
+            event: EventModel.MESSAGE_HISTORY,
             data: messages,
             to: roomId,
           });
         },
       });
     },
-    // 메세지 보내기
     watchSend: () => {
       watchEvent({
-        event: "send",
+        event: EventModel.SEND, // 메세지 보내기
         listener: async (data) => {
           const { roomId, me, text } = data;
 
@@ -127,17 +106,16 @@ const initSocket = (socket: SocketType) => {
             console.error("Error saving chat message:", error);
           }
           return notifyToChat({
-            event: "receiveMessage",
+            event: EventModel.RECEIVE_MESSAGE,
             data: chatMessage,
             to: roomId,
           });
         },
       });
     },
-    // 연결해제
     watchDisconnect: () => {
       watchEvent({
-        event: "roomDisconnect",
+        event: EventModel.ROOM_DISCONNECT, // 연결해제
         listener: async (data) => {
           const { roomId } = data;
           const isRoom = (await ChatRoom.findById(roomId)) !== null;
@@ -152,3 +130,4 @@ const initSocket = (socket: SocketType) => {
     },
   };
 };
+export default chatRoomSocket;
