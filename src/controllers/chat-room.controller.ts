@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
+import _ from "lodash";
 import ChatRoom from "../models/chat/chat-room.model";
 import ChatRoomDto from "../dto/chat/room.dto";
 import errorMessagesConfigs from "../configs/error-messages.config";
 import responseHandler from "../handlers/response.handler";
 import { CustomRequest } from "../@types/request.type";
+import ChatMessage from "../models/chat/chat-message.model";
+import ChatMessageDto from "../dto/chat/message.dto";
 
 /**
  * @description 채팅방 조회
@@ -34,12 +37,75 @@ const getChatRoom = async (req: Request, res: Response) => {
   try {
     const {
       params: { roomId },
-      room: { host, member },
-      body: { userId },
-      query: { page = 1, pageSize = 20, lastMessageId = "" },
-    } = req as CustomRequest;
+      query: { me, you },
+    } = req;
 
-    if (!userId) return responseHandler.notFound(res);
+    let chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
+    let messages: ChatMessageDto[];
+
+    if (chatRoom?.host === Number(me)) {
+      const lastLogId = chatRoom?.hostLeaveStatus.lastLog;
+      const lastLogMessage = await ChatMessage.findById(lastLogId);
+
+      if (!lastLogMessage) return;
+
+      const earlierMessages = await ChatMessage.find({
+        chatRoom: lastLogMessage.chatRoom,
+        createdAt: { $lt: lastLogMessage.createdAt },
+      })
+        .sort({ createdAt: -1 })
+        .limit(5);
+
+      const laterMessages = await ChatMessage.find({
+        chatRoom: lastLogMessage.chatRoom,
+        createdAt: { $gt: lastLogMessage.createdAt },
+      })
+        .sort({ createdAt: 1 })
+        .limit(5);
+
+      const messagesIncludingLastLog = [
+        ...earlierMessages,
+        lastLogMessage,
+        ...laterMessages,
+      ];
+
+      messages = _.chain(messagesIncludingLastLog)
+        .uniqBy("id")
+        .sortBy("createdAt")
+        .value();
+    } else {
+      const lastLogId = chatRoom?.memberLeaveStatus.lastLog;
+      const lastLogMessage = await ChatMessage.findById(lastLogId);
+
+      if (!lastLogMessage) return;
+
+      const earlierMessages = await ChatMessage.find({
+        chatRoom: lastLogMessage.chatRoom,
+        createdAt: { $lt: lastLogMessage.createdAt },
+      })
+        .sort({ createdAt: -1 })
+        .limit(5);
+
+      const laterMessages = await ChatMessage.find({
+        chatRoom: lastLogMessage.chatRoom,
+        createdAt: { $gt: lastLogMessage.createdAt },
+      })
+        .sort({ createdAt: 1 })
+        .limit(5);
+
+      const messagesIncludingLastLog = [
+        ...earlierMessages,
+        lastLogMessage,
+        ...laterMessages,
+      ];
+
+      messages = _.chain(messagesIncludingLastLog)
+        .uniqBy("id")
+        .sortBy("createdAt")
+        .value();
+    }
+
+    responseHandler.ok(res, messages);
   } catch {
     responseHandler.error(res);
   }
@@ -90,7 +156,7 @@ const deleteChatRoom = async (req: Request, res: Response) => {
   try {
     const {
       params: { roomId },
-      room: { host, member },
+      room: { me, you },
       body: { userId },
     } = req as CustomRequest;
 
@@ -110,10 +176,10 @@ const deleteChatRoom = async (req: Request, res: Response) => {
       );
     }
 
-    if (host === userId) {
+    if (me === userId) {
       chatRoom.hostDeletedStatus.isDeleted = true;
     }
-    if (member === userId) {
+    if (you === userId) {
       chatRoom.memberDeletedStatus.isDeleted = true;
     }
     await chatRoom.save();
