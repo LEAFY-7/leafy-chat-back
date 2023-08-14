@@ -5,7 +5,7 @@ export interface CustomRequest extends Request {
     id: number;
   };
   room: {
-    host: number;
-    member: number;
+    me: number;
+    you: number;
   };
 }

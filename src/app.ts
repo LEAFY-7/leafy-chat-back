@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose, { ConnectOptions } from "mongoose";
 import "dotenv/config";
-
+import routeConfigs from "./configs/route.config";
 import routes from "./routes";
 
 const { CONNECTION } = process.env;
@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use("/api/v1", routes);
+app.use(`${routeConfigs.api}/v1`, routes);
 
 mongoose
   .connect(CONNECTION!, {
