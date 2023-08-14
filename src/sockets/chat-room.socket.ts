@@ -19,7 +19,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
         await listener(...args);
       } catch (error) {
         console.error("소켓 이벤트 에러 발생 :", error);
-        socket.emit("error", "서버에서 에러가 발생했습니다.");
+        socket.emit("error", error);
       }
     });
   }
@@ -29,8 +29,8 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
       console.log(`${event}에 대해서 ${to}에 ${data}를 내보냅니다.`);
       chatRoomSpace.to(to).emit(event, data);
     } catch (error) {
-      console.error("Socket notification error:", error);
-      socket.emit("error", "소켓 메시지 전송 중 에러가 발생했습니다.");
+      console.error("전송 에러 발생 :", error);
+      socket.emit("error", error);
     }
   }
 
@@ -40,7 +40,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
       chatRoomSpace.to(to).emit(event, error);
     } catch (error) {
       console.error("Socket error notification error:", error);
-      socket.emit("error", "소켓 에러 메시지 전송 중 에러가 발생했습니다.");
+      socket.emit("error", error);
     }
   }
 
@@ -179,11 +179,8 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
             isRead: false,
           });
 
-          try {
-            await chatMessage.save();
-          } catch (error) {
-            console.error("Error saving chat message:", error);
-          }
+          await chatMessage.save();
+
           return notifyToChat({
             event: EventModel.RECEIVE_MESSAGE,
             data: chatMessage,
