@@ -11,11 +11,7 @@ router.get(
   tokenMiddleware.auth,
   chatRoomController.getChatRooms
 );
-router.get(
-  routeConfigs.roomId,
-  tokenMiddleware.auth,
-  chatRoomController.getChatRoom
-);
+router.get(routeConfigs.roomId, chatRoomController.getChatRoom);
 router.post(routeConfigs.root, chatRoomController.createChatRoom);
 router.delete(
   routeConfigs.roomId,

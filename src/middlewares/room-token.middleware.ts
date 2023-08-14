@@ -9,15 +9,19 @@ import { CustomRequest } from "../@types/request.type";
 const findRoom = async (req: Request) => {
   try {
     const roomId = req.params.roomId;
-    const [host, member] = roomId.split("_");
+    const { me, you } = req.query;
+
+    const newMe = Number(me);
+    const newYou = Number(you);
     const chatRoom: ChatRoomDto | null = await ChatRoomModel.findById(roomId);
-    if (chatRoom) {
-      if (host && member) {
-        (req as CustomRequest).room.host = +host;
-        (req as CustomRequest).room.member = +member;
-        return true;
-      }
-      return false;
+
+    if (chatRoom?.host === newMe) {
+      (req as CustomRequest).room.me = newMe;
+      (req as CustomRequest).room.you = newYou;
+      return true;
+    } else {
+      (req as CustomRequest).room.me = newMe;
+      (req as CustomRequest).room.you = newYou;
     }
   } catch {
     return false;
@@ -29,16 +33,8 @@ const authorizedRoom = async (
   res: Response,
   next: NextFunction
 ) => {
-  const {
-    body: { userId },
-  } = req;
-  const user = await userModel.findById(userId);
-  if (!user) return responseHandler.unauthorize(res);
-
   const foundRoom = findRoom(req);
   if (!foundRoom) return responseHandler.unauthorize(res);
-
-  // (req as CustomRequest).user = userId;
 
   next();
 };

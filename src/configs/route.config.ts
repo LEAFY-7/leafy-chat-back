@@ -1,4 +1,5 @@
 class RouteConfigs {
+  public api = "/api";
   public root = "/";
   public auth = "/auth";
   public chat = "/chat";
