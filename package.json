@@ -35,6 +35,8 @@
   },
   "scripts": {
     "start": "nodemon --exec \"ts-node\" --delay 1s ./src/server.ts",
+    "build": "tsc",
+    "build:start": "node dist/server.js",
     "forever": "forever start -c \"npm run start\" ",
     "test": "mocha -r ts-node/register ./src/tests/*.test.ts",
     "test:auth-signup": "mocha -r ts-node/register ./src/tests/auth-signup.test.ts",
