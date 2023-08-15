@@ -1,26 +1,36 @@
-const path = require("path");
 const fs = require("fs");
+const glob = require("glob");
+const path = require("path");
 const Terser = require("terser");
 
-// 읽어올 파일 경로
-const inputFilePath = path.join(__dirname, "./server.js"); // 현재 디렉토리의 server.js
+const folderPath = "./dist";
 
-// 미니파이케이션 작업
-const code = fs.readFileSync(inputFilePath, "utf8");
-const result = Terser.minify(code);
+const fileNames = glob.sync(`${folderPath}/**/*.js`);
 
-// 최적화된 코드를 파일에 쓰기
-if (result.error) {
-  console.error("Error during minification:", result.error);
-} else if (result.code !== undefined) {
-  const outputFilePath = path.join(__dirname, "server.min.js");
-  const outputDirectory = path.dirname(outputFilePath);
-  if (!fs.existsSync(outputDirectory)) {
-    fs.mkdirSync(outputDirectory, { recursive: true });
+const terserOptions = {
+  output: {
+    comments: false,
+  },
+};
+
+async function optimizeFiles() {
+  for (const filePath of fileNames) {
+    const originalCode = fs.readFileSync(filePath, "utf8");
+    try {
+      const result = await Terser.minify(originalCode, terserOptions);
+
+      if (result.error) {
+        console.error(`${filePath}에서 에러가 발생했습니다.:`, result.error);
+      } else {
+        fs.writeFileSync(filePath, result.code, "utf8");
+        console.log(`${filePath}의 최적화가 되었습니다.`);
+      }
+    } catch (error) {
+      console.error(`${filePath}에서 에러가 발생했습니다.:`, error);
+    }
   }
-  fs.writeFileSync(outputFilePath, result.code);
-  console.log("트리 쉐이킹 완료.");
-} else {
-  console.error("Minification result does not contain code.");
+
+  console.log("빌드 최적화가 완료되었습니다.");
 }
-console.log("트리 쉐이킹 완료.");
+
+optimizeFiles();
