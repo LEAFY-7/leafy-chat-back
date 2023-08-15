@@ -1,19 +1,18 @@
 const fs = require("fs");
 const glob = require("glob");
-const path = require("path");
 const Terser = require("terser");
 
 const folderPath = "./dist";
 
-const fileNames = glob.sync(`${folderPath}/**/*.js`);
-
-const terserOptions = {
-  output: {
-    comments: false,
-  },
-};
-
 async function optimizeFiles() {
+  const fileNames = glob.sync(`${folderPath}/**/*.js`);
+
+  const terserOptions = {
+    output: {
+      comments: false,
+    },
+  };
+
   for (const filePath of fileNames) {
     const originalCode = fs.readFileSync(filePath, "utf8");
     try {
