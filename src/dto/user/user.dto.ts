@@ -5,13 +5,13 @@ export default class UserDto extends Document {
   nickName: string;
   email: string;
   imgUrl?: string;
-  chatRoom: Schema.Types.ObjectId[];
+  chatRoom: string[];
 
   constructor(
     _id: number,
     nickName: string,
     email: string,
-    chatRoom: Schema.Types.ObjectId[],
+    chatRoom: string[],
     imgUrl?: string
   ) {
     super();

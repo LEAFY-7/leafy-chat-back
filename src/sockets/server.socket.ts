@@ -14,12 +14,15 @@ export const globalSpace = io.of("/global");
 export const chatRoomSpace = io.of("/chat");
 
 globalSpace.on("connection", (socket) => {
-  console.log("알람을 연결하였습니다.");
-  const { watchJoin } = globalSocket(socket);
+  console.log("알람 소켓을 연결하였습니다.");
+  const { watchJoin, watchSend } = globalSocket(socket);
+
+  watchJoin();
+  watchSend();
 });
 
 chatRoomSpace.on("connection", (socket) => {
-  console.log("채팅방이 연결되었습니다.");
+  console.log("채팅방 소켓을 연결되었습니다.");
   const { watchJoin, watchSend, watchDisconnect } = chatRoomSocket(socket);
 
   watchJoin();
