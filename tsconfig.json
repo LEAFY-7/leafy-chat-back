@@ -15,6 +15,6 @@
     "outDir": "./dist",
     "types": ["node", "mocha"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "src/build.js"],
+  "exclude": ["node_modules", "src/tests/**"]
 }
