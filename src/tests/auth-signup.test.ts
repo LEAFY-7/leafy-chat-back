@@ -8,7 +8,7 @@ import userModel from "../models/user/user.model";
 
 const END_POINT = "/api/v1/auth/signup";
 chai.use(chaiHttp);
-const userId = 789;
+const userId = 123;
 
 describe("회원가입 API 테스트", () => {
   before(async () => {

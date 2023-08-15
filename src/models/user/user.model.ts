@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema<UserDto>(
       required: false,
     },
     chatRoom: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: [String],
       default: [],
     },
   },
