@@ -8,5 +8,8 @@ enum EventModel {
   ERROR = "error",
   JOIN_ERROR = "joinError",
   CONNECT_ERROR = "connect_error",
+  GLOBAL = "global",
+  SEND_GLOBAL = "sendChatList",
+  RECEIVE_GLOBAL = "receiveChatList",
 }
 export default EventModel;

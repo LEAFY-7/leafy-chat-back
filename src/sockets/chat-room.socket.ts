@@ -8,6 +8,8 @@ import ChatRoom from "../models/chat/chat-room.model";
 import ChatMessage from "../models/chat/chat-message.model";
 import SocketModel from "../models/socket/socket.model";
 import EventModel from "../models/socket/socket-event.model";
+import User from "../models/user/user.model";
+import UserDto from "../dto/user/user.dto";
 
 const chatRoomSocket = (socket: SocketModel["socket"]) => {
   console.log("채팅 소켓이 연결되었습니다.");
@@ -216,6 +218,21 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
               chatRoom.memberLeaveStatus.lastLog = lastMessage?._id;
             }
             await chatRoom.save();
+
+            const user: UserDto | null = await User.findById(+me);
+            if (!user) return;
+
+            User.findByIdAndUpdate(
+              +me,
+              { $addToSet: { chatRoom: roomId } },
+              { new: true }
+            )
+              .then((updatedUser) => {
+                console.log("User with unique chatRoom added:", updatedUser);
+              })
+              .catch((error) => {
+                console.error("Error adding unique chatRoom to user:", error);
+              });
           }
         },
       });
