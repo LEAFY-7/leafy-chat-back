@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { chatRoomSpace } from "./server.socket";
+import { chatRoomSpace } from "./server";
 
 import ChatRoomDto from "../dto/chat/room.dto";
 import ChatMessageDto from "../dto/chat/message.dto";
@@ -50,7 +50,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
     watchJoin: () => {
       watchEvent({
         event: EventModel.JOIN, // 채팅방 접속
-        listener: async ({ roomId, me, you }) => {
+        listener: async ({ socketId, roomId, me, you }) => {
           const handshake = socket.handshake; // const { query } = handshake;
 
           const isRoom = (await ChatRoom.findById(roomId)) !== null;
@@ -59,6 +59,7 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
           let messages: ChatMessageDto[];
 
           if (!isRoom) {
+            // 방이 없을 시에, 생성
             chatRoom = await new ChatRoom({
               _id: roomId,
               host: +me,
@@ -78,6 +79,8 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
             });
             await chatRoom.save();
           }
+
+          // 방에 조인
           socket.join(roomId);
 
           if (chatRoom?.host === +me) {
@@ -174,6 +177,12 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
       watchEvent({
         event: EventModel.SEND, // 메세지 보내기
         listener: async ({ roomId, me, text }) => {
+          const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
+
+          if (!chatRoom) {
+            return "채팅방이 없습니다.";
+          }
+
           const chatMessage: ChatMessageDto = new ChatMessage({
             chatRoom: roomId,
             sender: me,
@@ -181,7 +190,17 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
             isRead: false,
           });
 
-          await chatMessage.save();
+          const newChatMessage = await chatMessage.save();
+
+          if (!chatRoom) return;
+
+          if (chatRoom.host === +me) {
+            chatRoom.hostLeaveStatus.lastLog = newChatMessage._id;
+          } else {
+            chatRoom.memberLeaveStatus.lastLog = newChatMessage._id;
+          }
+
+          chatRoom.save();
 
           return notifyToChat({
             event: EventModel.RECEIVE_MESSAGE,

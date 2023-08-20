@@ -34,5 +34,18 @@ function setDefaultDelete(this: any) {
     this.memberDeletedStatus.createdAt = date;
   }
 }
+function setDeleteStatueSetting(this: any) {
+  const date = new Date();
+  if (this.hostDeletedStatus.isDeleted && this.memberDeletedStatus.isDeleted) {
+    this.hostDeletedStatus.updatedAt = date;
+    this.memberDeletedStatus.updatedAt = date;
+  } else {
+    this.hostDeletedStatus.updatedAt = date;
+    this.hostDeletedStatus.createdAt = date;
 
-export default { setDefaultLeave, setDefaultDelete };
+    this.memberDeletedStatus.updatedAt = date;
+    this.memberDeletedStatus.createdAt = date;
+  }
+}
+
+export default { setDefaultLeave, setDefaultDelete, setDeleteStatueSetting };

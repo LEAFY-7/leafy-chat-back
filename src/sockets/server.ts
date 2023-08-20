@@ -1,7 +1,7 @@
 import { Server as SocketServer } from "socket.io";
 import http from "../app";
 import chatRoomSocket from "./chat-room.socket";
-import globalSocket from "./global.socket";
+import userSocket from "./user.socket";
 
 const io = new SocketServer(http, {
   cors: {
@@ -10,15 +10,16 @@ const io = new SocketServer(http, {
   },
 });
 
-export const globalSpace = io.of("/global");
+export const userSpace = io.of("/user");
 export const chatRoomSpace = io.of("/chat");
 
-globalSpace.on("connection", (socket) => {
-  console.log("알람 소켓을 연결하였습니다.");
-  const { watchJoin, watchSend } = globalSocket(socket);
+userSpace.on("connection", (socket) => {
+  console.log("유저 소켓을 연결하였습니다.....");
+  const { watchJoin, watchSend, watchEnterRoom } = userSocket(socket);
 
   watchJoin();
   watchSend();
+  watchEnterRoom();
 });
 
 chatRoomSpace.on("connection", (socket) => {
