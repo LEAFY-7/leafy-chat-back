@@ -18,6 +18,7 @@ export default class SocketModel {
   public watchEvent: WatchEventModel = new WatchEventModel();
   public notifyToChat: NotifyToChatModel = new NotifyToChatModel();
   public notifyError: NotifyErrorModel = new NotifyErrorModel();
+  public notifyToUser: NotifyToChatModel = new NotifyToChatModel();
 
   constructor(socket: SocketType, event: EventModel) {
     this.socket = socket;

@@ -19,3 +19,27 @@
 - 이것들을 위한 미들웨어 구성
 
 1.
+
+### a. Node.js 서버
+
+- [x] 서버 구현
+- [x] express 연동
+- [x] mongoDB 연동
+- [x] middleware 구현
+- [x] Router 구현
+- [x] controller 구현
+
+### b. 소켓 서버
+
+- [x] 소켓 연결
+- [x] 라우터에 맞게 소켓 연동
+
+### c. 배포
+
+- [x] MongoDB Atlas Cloud 배포
+- [x] Node 서버 배포
+
+### 채팅방에 `안읽음` -> `읽음` 처리
+
+- 채팅방에 들어 왔다면, isRead 를 `true`처리
+- 채팅방에 들어 온 것을 어떻게 판단?
