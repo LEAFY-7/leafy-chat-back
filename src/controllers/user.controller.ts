@@ -39,7 +39,7 @@ const signUp: RequestHandler = async (req: Request, res: Response) => {
 const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {
-      body: { userId, email, nickName, imgUrl },
+      body: { userId, email, nickName, profileImage },
     } = req;
 
     const user: UserDto | null = await User.findById(userId);
@@ -53,7 +53,7 @@ const updateUserInfo: RequestHandler = async (req: Request, res: Response) => {
 
     if (email) user.email = email;
     if (nickName) user.nickName = nickName;
-    if (imgUrl) user.imgUrl = imgUrl;
+    if (profileImage) user.profileImage = profileImage;
 
     const updatedUser: UserDto = await user.save();
     responseHandler.ok(res, updatedUser);

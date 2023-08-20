@@ -4,7 +4,7 @@ export default class UserDto extends Document {
   _id: number;
   nickName: string;
   email: string;
-  imgUrl?: string;
+  profileImage?: string;
   chatRoom: string[];
 
   constructor(
@@ -12,13 +12,13 @@ export default class UserDto extends Document {
     nickName: string,
     email: string,
     chatRoom: string[],
-    imgUrl?: string
+    profileImage?: string
   ) {
     super();
     this._id = _id;
     this.nickName = nickName;
     this.email = email;
     this.chatRoom = chatRoom;
-    this.imgUrl = imgUrl;
+    this.profileImage = profileImage;
   }
 }
