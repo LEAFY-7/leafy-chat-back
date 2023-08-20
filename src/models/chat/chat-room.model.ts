@@ -81,6 +81,7 @@ const chatRoomSchema = new mongoose.Schema<ChatRoomDto>(
 // 채팅방 모델 기본 미들웨어
 chatRoomSchema.pre("save", chatRoomDefaultMiddleware.setDefaultDelete);
 chatRoomSchema.pre("save", chatRoomDefaultMiddleware.setDefaultLeave);
+chatRoomSchema.pre("save", chatRoomDefaultMiddleware.setDeleteStatueSetting);
 
 class ChatRoomModel {
   private model: IChatRoomModel;
