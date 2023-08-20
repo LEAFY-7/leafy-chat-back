@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema<UserDto>(
       type: String,
       required: true,
     },
-    imgUrl: {
+    profileImage: {
       type: String,
       required: false,
     },
