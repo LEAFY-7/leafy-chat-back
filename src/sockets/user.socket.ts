@@ -8,8 +8,6 @@ import ChatMessage from "../models/chat/chat-message.model";
 import ChatRoomDto from "../dto/chat/room.dto";
 import UserDto from "../dto/user/user.dto";
 
-const userSocketMap = new Map();
-
 const userSocket = (socket: SocketModel["socket"]) => {
   console.log("소켓이 연결되었습니다.");
 
@@ -52,97 +50,111 @@ const userSocket = (socket: SocketModel["socket"]) => {
             chatList: [],
           };
           data.user = user;
+          let chatRoomIds;
 
           // 채팅방 배열
-          const chatRoomIds = user.chatRoom;
+          chatRoomIds = user.chatRoom;
 
           if (!chatRoomIds.length) {
-            data.chatList = [];
-          } else {
             const chatRooms: ChatRoomDto[] = await ChatRoom.find({
-              _id: { $in: chatRoomIds },
+              $or: [{ host: +userId }, { member: +userId }],
             });
 
-            let latestMessage: any;
-            let partner: UserDto | null;
-            for (const room of chatRooms) {
-              if (room.host === +userId) {
-                const messages = await ChatMessage.find({
-                  chatRoom: room._id,
-                  _id: { $gte: room.hostLeaveStatus.lastLog },
-                })
-                  .sort({ createdAt: -1 })
-                  .limit(1);
+            const chatRoomIdsArray = chatRooms.map((chatRoom) => chatRoom._id);
 
-                latestMessage = messages[0];
+            user.chatRoom = chatRoomIdsArray;
 
-                partner = await User.findById(room.member);
-                if (!partner) {
-                  partner = null;
-                }
-                const user = await User.findById(latestMessage.sender);
+            await user.save();
+            chatRoomIds = chatRoomIdsArray;
+          }
 
-                if (!user) {
-                  latestMessage.sender = null;
-                }
-                latestMessage.sender = user;
+          const chatRooms: ChatRoomDto[] = await ChatRoom.find({
+            _id: { $in: chatRoomIds },
+          });
 
-                const messageCount = await ChatMessage.countDocuments({
-                  chatRoom: room._id,
-                  _id: { $gt: room.hostLeaveStatus.lastLog },
-                });
+          let latestMessage: any;
+          let partner: UserDto | null;
+          for (const room of chatRooms) {
+            if (room.host === +userId) {
+              const messages = await ChatMessage.find({
+                chatRoom: room._id,
+                // _id: { $gte: room.hostLeaveStatus.lastLog },
+              })
+                .sort({ createdAt: -1 })
+                .limit(1);
 
-                const newChatList = {
-                  latestMessage,
-                  partner,
-                  id: room._id,
-                  count: messageCount,
-                };
+              latestMessage = messages[0];
 
-                data.chatList.push(newChatList);
-              } else {
-                const messages = await ChatMessage.find({
-                  chatRoom: room._id,
-                  _id: { $gte: room.memberLeaveStatus.lastLog },
-                })
-                  .sort({ createdAt: -1 })
-                  .limit(1);
-
-                latestMessage = messages[0];
-
-                partner = await User.findById(room.host);
-                if (!partner) {
-                  partner = null;
-                }
-
-                const user = await User.findById(latestMessage.sender);
-
-                if (!user) {
-                  latestMessage.sender = null;
-                }
-                latestMessage.sender = user;
-
-                const messageCount = await ChatMessage.countDocuments({
-                  chatRoom: room._id,
-                  _id: { $gt: room.memberLeaveStatus.lastLog },
-                });
-
-                const newChatList = {
-                  latestMessage,
-                  id: room._id,
-                  partner,
-                  count: messageCount,
-                };
-
-                data.chatList.push(newChatList);
+              partner = await User.findById(room.member);
+              if (!partner) {
+                partner = null;
               }
+              const user = await User.findById(latestMessage.sender);
+
+              if (!user) {
+                latestMessage.sender = null;
+              }
+              latestMessage.sender = user;
+
+              const messageCount = await ChatMessage.countDocuments({
+                chatRoom: room._id,
+                _id: { $gt: room.hostLeaveStatus.lastLog },
+              });
+
+              const newChatList = {
+                latestMessage,
+                partner,
+                id: room._id,
+                count: messageCount,
+              };
+
+              data.chatList.push(newChatList);
+            } else {
+              const messages = await ChatMessage.find({
+                chatRoom: room._id,
+                // _id: { $gte: room.memberLeaveStatus.lastLog },
+              })
+                .sort({ createdAt: -1 })
+                .limit(1);
+
+              latestMessage = messages[0];
+
+              partner = await User.findById(room.host);
+              if (!partner) {
+                partner = null;
+              }
+
+              const user = await User.findById(latestMessage.sender);
+
+              if (!user) {
+                latestMessage.sender = null;
+              }
+              latestMessage.sender = user;
+
+              const messageCount = await ChatMessage.countDocuments({
+                chatRoom: room._id,
+                _id: { $gt: room.memberLeaveStatus.lastLog },
+              });
+
+              const newChatList = {
+                latestMessage,
+                id: room._id,
+                partner,
+                count: messageCount,
+              };
+
+              data.chatList.push(newChatList);
             }
+            data.chatList.sort(
+              (a: any, b: any) =>
+                b.latestMessage.createdAt - a.latestMessage.createdAt
+            );
           }
 
           return notifyToUser({
             event: EventModel.GET_USER,
             data: { data, userId },
-            to: socket.id,
+            to: userId,
           });
         },
       });
@@ -246,50 +258,17 @@ const userSocket = (socket: SocketModel["socket"]) => {
                 data.chatList.push(newChatList);
               }
             }
+            data.chatList.sort(
+              (a: any, b: any) =>
+                b.latestMessage.createdAt - a.latestMessage.createdAt
+            );
           }
 
-          // const targetId = userSocketMap.get(userId);
-          // console.log("보내는 아이디", targetId);
           return notifyToUser({
             event: EventModel.GET_USER,
             data: { data, userId },
             to: userId,
           });
-        },
-      });
-    },
-    watchEnterRoom: () => {
-      watchEvent({
-        event: EventModel.ENTER_ROOM,
-        listener: async ({ userId, roomId }) => {
-          const user: UserDto | null = await User.findById(+userId);
-          if (!user) return;
-
-          const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
-
-          if (!chatRoom) return;
-
-          if (chatRoom.host === +userId) {
-            const latestMessage = await ChatMessage.find({ chatRoom: roomId })
-              .sort({ createdAt: -1 })
-              .limit(1)
-              .exec();
-
-            if (!latestMessage.length) return;
-
-            chatRoom.hostLeaveStatus.lastLog = latestMessage[0]._id;
-            chatRoom.save();
-          } else {
-            const latestMessage = await ChatMessage.find({ chatRoom: roomId })
-              .sort({ createdAt: -1 })
-              .limit(1)
-              .exec();
-
-            if (!latestMessage.length) return;
-
-            chatRoom.memberLeaveStatus.lastLog = latestMessage[0]._id;
-            chatRoom.save();
-          }
         },
       });
     },

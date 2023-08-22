@@ -7,6 +7,8 @@ class RouteConfigs {
   public chatMessage = "/chat-message";
   public signup = "/signup";
   public updateUser = "/update-user";
+  public clearUserChatRoom = "/clear/chat-room";
+  public clearNoMessageChatRoom = "/clear/chat-room/none";
   public prev = "/prev";
   public next = "/next";
   public roomId = "/:roomId";

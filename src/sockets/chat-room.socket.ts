@@ -50,8 +50,9 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
     watchJoin: () => {
       watchEvent({
         event: EventModel.JOIN, // 채팅방 접속
-        listener: async ({ socketId, roomId, me, you }) => {
-          const handshake = socket.handshake; // const { query } = handshake;
+        listener: async ({ roomId, me, you }) => {
+          // const handshake = socket.handshake;
+          // const { query } = handshake;
 
           const isRoom = (await ChatRoom.findById(roomId)) !== null;
 
@@ -78,6 +79,16 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
               },
             });
             await chatRoom.save();
+
+            const user: UserDto | null = await User.findById(+me);
+
+            const chatRoomList = user?.chatRoom;
+
+            if (chatRoomList && !chatRoomList.includes(roomId)) {
+              chatRoomList.push(chatRoom._id);
+              user.chatRoom = chatRoomList;
+              user.save();
+            }
           }
 
           // 방에 조인
@@ -176,11 +187,32 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
     watchSend: () => {
       watchEvent({
         event: EventModel.SEND, // 메세지 보내기
-        listener: async ({ roomId, me, text }) => {
+        listener: async ({ roomId, me, you, text }) => {
           const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
 
           if (!chatRoom) {
             return "채팅방이 없습니다.";
+          }
+
+          const user: UserDto | null = await User.findById(+me);
+          const member: UserDto | null = await User.findById(+you);
+
+          if (!user || !member) {
+            return "사용자를 찾을 수 없습니다.";
+          }
+          const chatRoomList = user.chatRoom;
+          const memberRoomList = member.chatRoom;
+
+          if (chatRoomList && !chatRoomList.includes(roomId)) {
+            chatRoomList.push(roomId);
+            user.chatRoom = chatRoomList;
+            user.save();
+          }
+
+          if (memberRoomList && !memberRoomList.includes(roomId)) {
+            memberRoomList.push(roomId);
+            member.chatRoom = memberRoomList;
+            member.save();
           }
 
           const chatMessage: ChatMessageDto = new ChatMessage({
@@ -199,8 +231,21 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
           } else {
             chatRoom.memberLeaveStatus.lastLog = newChatMessage._id;
           }
+          await chatRoom.save();
 
-          chatRoom.save();
+          const messages: ChatMessageDto[] = await ChatMessage.find({
+            chatRoom: roomId,
+          })
+            .sort({ createdAt: 1 })
+            .limit(1);
+
+          const latestMessage = messages[0];
+
+          if (latestMessage.id === newChatMessage.id) {
+            chatRoom.hostLeaveStatus.lastLog = newChatMessage.id;
+            chatRoom.memberLeaveStatus.lastLog = newChatMessage.id;
+            await chatRoom.save();
+          }
 
           return notifyToChat({
             event: EventModel.RECEIVE_MESSAGE,
@@ -215,44 +260,89 @@ const chatRoomSocket = (socket: SocketModel["socket"]) => {
         event: EventModel.ROOM_DISCONNECT, // 연결해제
         listener: async ({ roomId, me }) => {
           const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId);
+          const user: UserDto | null = await User.findById(+me);
+
+          if (!user) {
+            console.log("사용자를 찾을 수 없습니다.");
+            return;
+          }
           const isRoom = chatRoom !== null;
-          const isMessage =
-            (await ChatMessage.find({ chatRoom: roomId })).length > 0;
+          const isMessage = await ChatMessage.exists({ chatRoom: roomId });
 
-          if (isRoom && !isMessage) {
-            await ChatRoom.findByIdAndDelete(roomId);
-          }
-
-          if (isRoom && isMessage) {
-            const lastMessage: ChatMessageDto | null =
-              await ChatMessage.findOne({ chatRoom: roomId })
-                .sort({ createdAt: -1 })
-                .limit(1);
-
-            if (!lastMessage) return;
-
-            if (chatRoom.host === +me) {
-              chatRoom.hostLeaveStatus.lastLog = lastMessage?._id;
+          if (isRoom) {
+            if (!isMessage) {
+              await ChatRoom.findByIdAndDelete(roomId);
+              user.chatRoom = user.chatRoom.filter(
+                (chatRoomId) => chatRoomId !== roomId
+              );
+              await user.save();
             } else {
-              chatRoom.memberLeaveStatus.lastLog = lastMessage?._id;
+              const lastMessage: ChatMessageDto | null =
+                await ChatMessage.findOne({ chatRoom: roomId })
+                  .sort({ createdAt: -1 })
+                  .limit(1);
+
+              if (!lastMessage) {
+                console.log("최근 메시지를 찾을 수 없습니다.");
+                return;
+              }
+
+              if (chatRoom.host === +me) {
+                chatRoom.hostLeaveStatus.lastLog = lastMessage?._id;
+              } else {
+                chatRoom.memberLeaveStatus.lastLog = lastMessage?._id;
+              }
+              await chatRoom.save();
+
+              await User.findByIdAndUpdate(
+                +me,
+                { $addToSet: { chatRoom: roomId } },
+                { new: true }
+              )
+                .then((updatedUser) => {
+                  console.log("채팅방이 추가 되었습니다.:", updatedUser);
+                })
+                .catch((error) => {
+                  console.error(
+                    "채팅방을 추가하는 도중 에러가 발생했습니다.",
+                    error
+                  );
+                });
             }
-            await chatRoom.save();
-
-            const user: UserDto | null = await User.findById(+me);
-            if (!user) return;
-
-            User.findByIdAndUpdate(
-              +me,
-              { $addToSet: { chatRoom: roomId } },
-              { new: true }
-            )
-              .then((updatedUser) => {
-                console.log("User with unique chatRoom added:", updatedUser);
-              })
-              .catch((error) => {
-                console.error("Error adding unique chatRoom to user:", error);
-              });
           }
+        },
+      });
+    },
+    watchEnter: () => {
+      watchEvent({
+        event: EventModel.ENTER_ROOM,
+        listener: async ({ userId, roomId }) => {
+          const user: UserDto | null = await User.findById(+userId); // 유저 찾고
+          if (!user) return;
+
+          const chatRoom: ChatRoomDto | null = await ChatRoom.findById(roomId); // 채팅방 찾고
+          if (!chatRoom) return;
+
+          if (chatRoom.host === +userId) {
+            const latestMessage = await ChatMessage.find({ chatRoom: roomId })
+              .sort({ createdAt: -1 })
+              .limit(1)
+              .exec();
+
+            if (!latestMessage.length) return;
+
+            chatRoom.hostLeaveStatus.lastLog = latestMessage[0]._id;
+          } else {
+            const latestMessage = await ChatMessage.find({ chatRoom: roomId })
+              .sort({ createdAt: -1 })
+              .limit(1)
+              .exec();
+
+            if (!latestMessage.length) return;
+
+            chatRoom.memberLeaveStatus.lastLog = latestMessage[0]._id;
+          }
+          await chatRoom.save();
         },
       });
     },
